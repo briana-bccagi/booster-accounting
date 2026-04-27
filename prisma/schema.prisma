@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Transaction {
+  id            String   @id @default(uuid())
+  date          DateTime @default(now())
+  category      String
+  voucherNumber Int      @unique
+  vendor        String
+  amount        Float
+  type          String
+  cleared       Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  voucher       Voucher?
+
+  @@map("transactions")
+}
+
+model Voucher {
+  id              String      @id @default(uuid())
+  voucherNumber   Int         @unique
+  receiptImageUrl String?
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  transaction     Transaction @relation(fields: [voucherNumber], references: [voucherNumber])
+
+  @@map("vouchers")
+}
+
+model Counter {
+  id    String @id @default("voucher")
+  value Int    @default(0)
+
+  @@map("counters")
+}
+
