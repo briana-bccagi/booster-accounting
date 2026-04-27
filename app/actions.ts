@@ -51,12 +51,25 @@ async function getNextVoucherNumber() {
   if (useDemoMode) {
     return Math.max(...demoTransactions.map(t => t.voucherNumber)) + 1
   }
-  const counter = await prisma.counter.upsert({
-    where: { id: 'voucher' },
-    update: { value: { increment: 1 } },
-    create: { id: 'voucher', value: 1 },
-  })
-  return counter.value
+  try {
+    const counter = await prisma.counter.upsert({
+      where: { id: 'voucher' },
+      update: { value: { increment: 1 } },
+      create: { id: 'voucher', value: 1 },
+    })
+    return counter.value
+  } catch {
+    return Math.max(...demoTransactions.map(t => t.voucherNumber)) + 1
+  }
+}
+
+async function isDbEmpty() {
+  try {
+    const count = await prisma.transaction.count()
+    return count === 0
+  } catch {
+    return true
+  }
 }
 
 export async function getTransactions() {
@@ -94,7 +107,7 @@ export async function getTransactionById(id: string) {
 }
 
 export async function createTransaction(data: TransactionInput) {
-  if (useDemoMode) {
+  if (useDemoMode || await isDbEmpty()) {
     return { success: true, message: 'Demo mode: changes not saved. Connect a database to persist data.' }
   }
   try {
@@ -128,7 +141,7 @@ export async function createTransaction(data: TransactionInput) {
 }
 
 export async function updateTransaction(data: TransactionUpdate) {
-  if (useDemoMode) {
+  if (useDemoMode || await isDbEmpty()) {
     return { success: true, message: 'Demo mode: changes not saved. Connect a database to persist data.' }
   }
   try {
@@ -154,7 +167,7 @@ export async function updateTransaction(data: TransactionUpdate) {
 }
 
 export async function deleteTransaction(id: string) {
-  if (useDemoMode) {
+  if (useDemoMode || await isDbEmpty()) {
     return { success: true, message: 'Demo mode: changes not saved. Connect a database to persist data.' }
   }
   try {
@@ -169,7 +182,7 @@ export async function deleteTransaction(id: string) {
 }
 
 export async function toggleCleared(id: string, cleared: boolean) {
-  if (useDemoMode) {
+  if (useDemoMode || await isDbEmpty()) {
     return { success: true, message: 'Demo mode: changes not saved. Connect a database to persist data.' }
   }
   try {
@@ -187,7 +200,7 @@ export async function toggleCleared(id: string, cleared: boolean) {
 }
 
 export async function uploadReceipt(voucherNumber: number, formData: FormData) {
-  if (useDemoMode) {
+  if (useDemoMode || await isDbEmpty()) {
     return { success: true, message: 'Demo mode: file uploads not saved. Connect a database to persist data.' }
   }
   try {
@@ -213,7 +226,7 @@ export async function uploadReceipt(voucherNumber: number, formData: FormData) {
 }
 
 export async function updateVoucherNotes(voucherNumber: number, notes: string) {
-  if (useDemoMode) {
+  if (useDemoMode || await isDbEmpty()) {
     return { success: true, message: 'Demo mode: changes not saved. Connect a database to persist data.' }
   }
   try {
