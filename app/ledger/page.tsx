@@ -85,8 +85,10 @@ export default function LedgerPage() {
 
   const handleEdit = (t: Transaction) => {
     setEditingId(t.id)
+    const dateValue = t.date as unknown as string | Date
+    const dateStr = typeof dateValue === 'string' ? dateValue : dateValue.toISOString()
     setFormData({
-      date: t.date.split('T')[0],
+      date: dateStr.split('T')[0],
       category: t.category as TransactionInput['category'],
       vendor: t.vendor,
       amount: String(t.amount),
