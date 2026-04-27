@@ -3,6 +3,8 @@
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { put } from '@vercel/blob'
+import { setDbError, getDbError, clearDbError } from '@/lib/db-status'
+import { demoTransactions, demoVouchers, getDemoOverview } from '@/lib/demo-data'
 
 const categories = [
   'Concessions (D)',
@@ -33,15 +35,22 @@ export interface TransactionUpdate extends TransactionInput {
   id: string
 }
 
+// Track if we're using demo mode
+let useDemoMode = false
+
 function handleDbError(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error)
-  if (message.includes('DATABASE_URL') || message.includes('connection') || message.includes('P1001') || message.includes('P1000')) {
-    return 'Database not configured. Please connect a PostgreSQL database in your Vercel project settings.'
+  if (message.includes('DATABASE_URL') || message.includes('connection') || message.includes('P1001') || message.includes('P1000') || message.includes('P1003')) {
+    useDemoMode = true
+    return 'Database not configured. Using demo data. Please connect a PostgreSQL database in your Vercel project settings to save real data.'
   }
   return message
 }
 
 async function getNextVoucherNumber() {
+  if (useDemoMode) {
+    return Math.max(...demoTransactions.map(t => t.voucherNumber)) + 1
+  }
   const counter = await prisma.counter.upsert({
     where: { id: 'voucher' },
     update: { value: { increment: 1 } },
@@ -51,30 +60,43 @@ async function getNextVoucherNumber() {
 }
 
 export async function getTransactions() {
+  if (useDemoMode) return demoTransactions
   try {
-    return await prisma.transaction.findMany({
+    const data = await prisma.transaction.findMany({
       orderBy: { date: 'desc' },
       include: { voucher: true },
     })
+    clearDbError()
+    if (data.length === 0) {
+      return demoTransactions
+    }
+    return data
   } catch (error) {
-    console.error('getTransactions error:', error)
-    return []
+    handleDbError(error)
+    setDbError('Database not connected - showing demo data')
+    return demoTransactions
   }
 }
 
 export async function getTransactionById(id: string) {
+  if (useDemoMode) {
+    return demoTransactions.find(t => t.id === id) || null
+  }
   try {
     return await prisma.transaction.findUnique({
       where: { id },
       include: { voucher: true },
     })
   } catch (error) {
-    console.error('getTransactionById error:', error)
-    return null
+    handleDbError(error)
+    return demoTransactions.find(t => t.id === id) || null
   }
 }
 
 export async function createTransaction(data: TransactionInput) {
+  if (useDemoMode) {
+    return { success: true, message: 'Demo mode: changes not saved. Connect a database to persist data.' }
+  }
   try {
     const voucherNumber = await getNextVoucherNumber()
 
@@ -106,6 +128,9 @@ export async function createTransaction(data: TransactionInput) {
 }
 
 export async function updateTransaction(data: TransactionUpdate) {
+  if (useDemoMode) {
+    return { success: true, message: 'Demo mode: changes not saved. Connect a database to persist data.' }
+  }
   try {
     const transaction = await prisma.transaction.update({
       where: { id: data.id },
@@ -129,6 +154,9 @@ export async function updateTransaction(data: TransactionUpdate) {
 }
 
 export async function deleteTransaction(id: string) {
+  if (useDemoMode) {
+    return { success: true, message: 'Demo mode: changes not saved. Connect a database to persist data.' }
+  }
   try {
     await prisma.transaction.delete({ where: { id } })
     revalidatePath('/ledger')
@@ -141,6 +169,9 @@ export async function deleteTransaction(id: string) {
 }
 
 export async function toggleCleared(id: string, cleared: boolean) {
+  if (useDemoMode) {
+    return { success: true, message: 'Demo mode: changes not saved. Connect a database to persist data.' }
+  }
   try {
     await prisma.transaction.update({
       where: { id },
@@ -156,6 +187,9 @@ export async function toggleCleared(id: string, cleared: boolean) {
 }
 
 export async function uploadReceipt(voucherNumber: number, formData: FormData) {
+  if (useDemoMode) {
+    return { success: true, message: 'Demo mode: file uploads not saved. Connect a database to persist data.' }
+  }
   try {
     const file = formData.get('receipt') as File
     if (!file) throw new Error('No file provided')
@@ -179,6 +213,9 @@ export async function uploadReceipt(voucherNumber: number, formData: FormData) {
 }
 
 export async function updateVoucherNotes(voucherNumber: number, notes: string) {
+  if (useDemoMode) {
+    return { success: true, message: 'Demo mode: changes not saved. Connect a database to persist data.' }
+  }
   try {
     await prisma.voucher.update({
       where: { voucherNumber },
@@ -193,20 +230,32 @@ export async function updateVoucherNotes(voucherNumber: number, notes: string) {
 }
 
 export async function getVouchers() {
+  if (useDemoMode) return demoVouchers as unknown as Array<any>
   try {
-    return await prisma.voucher.findMany({
+    const data = await prisma.voucher.findMany({
       orderBy: { voucherNumber: 'desc' },
       include: { transaction: true },
     })
+    clearDbError()
+    if (data.length === 0) {
+      return demoVouchers as unknown as Array<any>
+    }
+    return data
   } catch (error) {
-    console.error('getVouchers error:', error)
-    return []
+    handleDbError(error)
+    setDbError('Database not connected - showing demo data')
+    return demoVouchers as unknown as Array<any>
   }
 }
 
 export async function getAccountOverview() {
+  if (useDemoMode) return getDemoOverview()
   try {
     const transactions = await prisma.transaction.findMany()
+
+    if (transactions.length === 0) {
+      return getDemoOverview()
+    }
 
     const totalDeposits = transactions
       .filter((t: { type: string; amount: number }) => t.type === 'DEPOSIT')
@@ -231,6 +280,7 @@ export async function getAccountOverview() {
     const pendingDeposits = totalDeposits - clearedDeposits
     const pendingWithdrawals = totalWithdrawals - clearedWithdrawals
 
+    clearDbError()
     return {
       balance,
       clearedBalance,
@@ -244,19 +294,9 @@ export async function getAccountOverview() {
       transactionCount: transactions.length,
     }
   } catch (error) {
-    console.error('getAccountOverview error:', error)
-    return {
-      balance: 0,
-      clearedBalance: 0,
-      pendingBalance: 0,
-      totalDeposits: 0,
-      totalWithdrawals: 0,
-      clearedDeposits: 0,
-      clearedWithdrawals: 0,
-      pendingDeposits: 0,
-      pendingWithdrawals: 0,
-      transactionCount: 0,
-    }
+    handleDbError(error)
+    setDbError('Database not connected - showing demo data')
+    return getDemoOverview()
   }
 }
 
