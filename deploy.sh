@@ -9,7 +9,7 @@ echo "Building Booster Club Accounting App..."
 npx prisma generate
 
 # Build Next.js app
-next build
+npx next build
 
 echo "Deploying to Vercel..."
 vercel --token "$VERCEL_TOKEN" --yes "$@"
