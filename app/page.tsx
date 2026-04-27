@@ -1,10 +1,10 @@
-import { getAccountOverview, getTransactions } from './actions'
+import { getAccountOverview, getMonthlyBreakdown } from './actions'
 
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
   const overview = await getAccountOverview()
-  const recentTransactions = (await getTransactions()).slice(0, 5)
+  const monthlyBreakdown = await getMonthlyBreakdown()
 
   return (
     <div className="space-y-8">
@@ -25,74 +25,71 @@ export default async function DashboardPage() {
           <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wide">Pending</h2>
           <p className="text-3xl font-bold text-amber-600 mt-2">${overview.pendingBalance.toFixed(2)}</p>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Deposits</h2>
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-slate-600">Total Deposits</span>
-              <span className="font-medium text-green-600">+${overview.totalDeposits.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600">Cleared</span>
-              <span className="font-medium text-green-600">+${overview.clearedDeposits.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600">Pending</span>
-              <span className="font-medium text-amber-600">+${overview.pendingDeposits.toFixed(2)}</span>
-            </div>
-          </div>
-        </div>
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold text-slate-900">Monthly Breakdown</h2>
 
-        <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Withdrawals</h2>
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-slate-600">Total Withdrawals</span>
-              <span className="font-medium text-red-600">-${overview.totalWithdrawals.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600">Cleared</span>
-              <span className="font-medium text-red-600">-${overview.clearedWithdrawals.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600">Pending</span>
-              <span className="font-medium text-amber-600">-${overview.pendingWithdrawals.toFixed(2)}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow border border-slate-200">
-        <div className="px-6 py-4 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900">Recent Transactions</h2>
-        </div>
-        <div className="divide-y divide-slate-200">
-          {recentTransactions.length === 0 ? (
-            <p className="px-6 py-4 text-slate-500">No transactions yet.</p>
-          ) : (
-            recentTransactions.map((t) => (
-              <div key={t.id} className="px-6 py-4 flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-slate-900">{t.vendor}</p>
-                  <p className="text-sm text-slate-500">{t.category}</p>
+        {monthlyBreakdown.length === 0 ? (
+          <p className="text-slate-500">No transactions yet.</p>
+        ) : (
+          monthlyBreakdown.map((month) => (
+            <div key={month.monthLabel} className="bg-white rounded-lg shadow border border-slate-200 overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+                <h3 className="text-lg font-semibold text-slate-900">{month.monthLabel}</h3>
+                <div className="flex gap-4 text-sm">
+                  <span className="text-green-600 font-medium">+${month.totalDeposits.toFixed(2)}</span>
+                  <span className="text-red-600 font-medium">-${month.totalWithdrawals.toFixed(2)}</span>
+                  <span className={`font-bold ${month.net >= 0 ? 'text-slate-900' : 'text-red-700'}`}>
+                    Net: ${month.net.toFixed(2)}
+                  </span>
                 </div>
-                <div className="text-right">
-                  <p className={`font-medium ${t.type === 'DEPOSIT' ? 'text-green-600' : 'text-red-600'}`}>
-                    {t.type === 'DEPOSIT' ? '+' : '-'}${Number(t.amount).toFixed(2)}
-                  </p>
-                  <p className="text-sm text-slate-500">
-                    {t.cleared ? 'Cleared' : 'Pending'}
-                  </p>
-                </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-slate-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Category</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Deposits</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Withdrawals</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Net</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {month.categories.map((cat) => (
+                      <tr key={cat.category} className="hover:bg-slate-50">
+                        <td className="px-6 py-3 text-sm text-slate-900">{cat.category}</td>
+                        <td className="px-6 py-3 text-sm text-right text-green-600 font-medium">
+                          {cat.deposits > 0 ? `+$${cat.deposits.toFixed(2)}` : '-'}
+                        </td>
+                        <td className="px-6 py-3 text-sm text-right text-red-600 font-medium">
+                          {cat.withdrawals > 0 ? `-$${cat.withdrawals.toFixed(2)}` : '-'}
+                        </td>
+                        <td className={`px-6 py-3 text-sm text-right font-bold ${cat.net >= 0 ? 'text-slate-900' : 'text-red-700'}`}>
+                          ${cat.net.toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                    <tr className="bg-slate-100 font-semibold">
+                      <td className="px-6 py-3 text-sm text-slate-900">Month Total</td>
+                      <td className="px-6 py-3 text-sm text-right text-green-700">
+                        +${month.totalDeposits.toFixed(2)}
+                      </td>
+                      <td className="px-6 py-3 text-sm text-right text-red-700">
+                        -${month.totalWithdrawals.toFixed(2)}
+                      </td>
+                      <td className={`px-6 py-3 text-sm text-right ${month.net >= 0 ? 'text-slate-900' : 'text-red-800'}`}>
+                        ${month.net.toFixed(2)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-            ))
-          )}
-        </div>
+
+              <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 text-right">
+                {month.transactionCount} transaction{month.transactionCount !== 1 ? 's' : ''}
+              </div>
+          ))
+        )}
       </div>
-    </div>
   )
 }
-

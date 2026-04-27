@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local node binaries / IDE
+node-v22.15.0-darwin-arm64/
+node-*.tar.gz
+.vscode/

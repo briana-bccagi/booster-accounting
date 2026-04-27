@@ -313,3 +313,77 @@ export async function getAccountOverview() {
   }
 }
 
+export interface CategoryBreakdown {
+  category: string
+  deposits: number
+  withdrawals: number
+  net: number
+}
+
+export interface MonthBreakdown {
+  monthLabel: string
+  year: number
+  monthIndex: number
+  totalDeposits: number
+  totalWithdrawals: number
+  net: number
+  transactionCount: number
+  categories: CategoryBreakdown[]
+}
+
+export async function getMonthlyBreakdown(): Promise<MonthBreakdown[]> {
+  const transactions = await getTransactions()
+
+  const monthMap = new Map<string, MonthBreakdown>()
+
+  for (const t of transactions) {
+    const date = new Date(t.date)
+    const year = date.getFullYear()
+    const monthIndex = date.getMonth()
+    const monthLabel = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    const key = `${year}-${monthIndex}`
+
+    if (!monthMap.has(key)) {
+      monthMap.set(key, {
+        monthLabel,
+        year,
+        monthIndex,
+        totalDeposits: 0,
+        totalWithdrawals: 0,
+        net: 0,
+        transactionCount: 0,
+        categories: [],
+      })
+    }
+
+    const month = monthMap.get(key)!
+
+    const amount = Number(t.amount)
+    month.transactionCount += 1
+
+    if (t.type === 'DEPOSIT') {
+      month.totalDeposits += amount
+    } else {
+      month.totalWithdrawals += amount
+    }
+    month.net = month.totalDeposits - month.totalWithdrawals
+
+    let cat = month.categories.find((c) => c.category === t.category)
+    if (!cat) {
+      cat = { category: t.category, deposits: 0, withdrawals: 0, net: 0 }
+      month.categories.push(cat)
+    }
+
+    if (t.type === 'DEPOSIT') {
+      cat.deposits += amount
+    } else {
+      cat.withdrawals += amount
+    }
+    cat.net = cat.deposits - cat.withdrawals
+  }
+
+  return Array.from(monthMap.values()).sort((a, b) => {
+    if (a.year !== b.year) return b.year - a.year
+    return b.monthIndex - a.monthIndex
+  })
+}
