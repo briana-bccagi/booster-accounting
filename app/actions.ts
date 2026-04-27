@@ -331,12 +331,34 @@ export interface MonthBreakdown {
   categories: CategoryBreakdown[]
 }
 
-export async function getMonthlyBreakdown(): Promise<MonthBreakdown[]> {
+export interface MonthlyBreakdownFilters {
+  year?: number
+  month?: number
+  fiscalYear?: number
+}
+
+export async function getMonthlyBreakdown(filters?: MonthlyBreakdownFilters): Promise<MonthBreakdown[]> {
   const transactions = await getTransactions()
+
+  let filteredTransactions = transactions
+
+  if (filters?.year !== undefined && filters?.month !== undefined) {
+    filteredTransactions = transactions.filter((t) => {
+      const date = new Date(t.date)
+      return date.getFullYear() === filters.year && date.getMonth() === filters.month
+    })
+  } else if (filters?.fiscalYear !== undefined) {
+    const startDate = new Date(filters.fiscalYear, 5, 1)
+    const endDate = new Date(filters.fiscalYear + 1, 4, 31, 23, 59, 59)
+    filteredTransactions = transactions.filter((t) => {
+      const date = new Date(t.date)
+      return date >= startDate && date <= endDate
+    })
+  }
 
   const monthMap = new Map<string, MonthBreakdown>()
 
-  for (const t of transactions) {
+  for (const t of filteredTransactions) {
     const date = new Date(t.date)
     const year = date.getFullYear()
     const monthIndex = date.getMonth()
