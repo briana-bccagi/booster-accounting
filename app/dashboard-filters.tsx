@@ -10,9 +10,11 @@ interface FilterOption {
 interface DashboardFiltersProps {
   monthOptions: FilterOption[]
   fiscalYearOptions: FilterOption[]
+  defaultYear?: number
+  defaultMonth?: number
 }
 
-export default function DashboardFilters({ monthOptions, fiscalYearOptions }: DashboardFiltersProps) {
+export default function DashboardFilters({ monthOptions, fiscalYearOptions, defaultYear, defaultMonth }: DashboardFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -20,7 +22,12 @@ export default function DashboardFilters({ monthOptions, fiscalYearOptions }: Da
   const currentMonth = searchParams.get('month')
   const currentFiscalYear = searchParams.get('fiscalYear')
 
-  const selectedMonth = currentYear && currentMonth ? `${currentYear}-${currentMonth}` : ''
+  // Use URL params if present, otherwise use defaults if no fiscal year is selected
+  const selectedMonth = currentYear && currentMonth
+    ? `${currentYear}-${currentMonth}`
+    : !currentFiscalYear && defaultYear !== undefined && defaultMonth !== undefined
+      ? `${defaultYear}-${defaultMonth}`
+      : ''
   const selectedFiscalYear = currentFiscalYear || ''
 
   const handleMonthChange = (value: string) => {

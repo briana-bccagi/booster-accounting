@@ -1,5 +1,6 @@
 import { getAccountOverview, getPivotTable, getTransactions } from './actions'
 import DashboardFilters from './dashboard-filters'
+import { formatCurrency } from '../lib/utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,13 +11,22 @@ interface PageProps {
 export default async function DashboardPage({ searchParams }: PageProps) {
   const params = await searchParams
 
-  const yearParam = params.year ? parseInt(params.year, 10) : undefined
-  const monthParam = params.month ? parseInt(params.month, 10) : undefined
+  // Get current date for default values
+  const now = new Date()
+  const currentYear = now.getFullYear()
+  const currentMonth = now.getMonth() // 0-11
+
+  const yearParam = params.year ? parseInt(params.year, 10) : currentYear
+  const monthParam = params.month ? parseInt(params.month, 10) : currentMonth
   const fiscalYearParam = params.fiscalYear ? parseInt(params.fiscalYear, 10) : undefined
 
+  // Only use default month/year if no fiscal year is specified
+  const effectiveYear = fiscalYearParam !== undefined ? undefined : yearParam
+  const effectiveMonth = fiscalYearParam !== undefined ? undefined : monthParam
+
   const filters =
-    yearParam !== undefined && monthParam !== undefined
-      ? { year: yearParam, month: monthParam }
+    effectiveYear !== undefined && effectiveMonth !== undefined
+      ? { year: effectiveYear, month: effectiveMonth }
       : fiscalYearParam !== undefined
         ? { fiscalYear: fiscalYearParam }
         : undefined
@@ -60,8 +70,8 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
   let headingText = 'Category Breakdown by Month'
   let periodLabel = 'All Time'
-  if (yearParam !== undefined && monthParam !== undefined) {
-    const date = new Date(yearParam, monthParam)
+  if (effectiveYear !== undefined && effectiveMonth !== undefined) {
+    const date = new Date(effectiveYear, effectiveMonth)
     headingText = `${date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} Breakdown`
     periodLabel = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
   } else if (fiscalYearParam !== undefined) {
@@ -80,7 +90,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
           <h2 className="text-xs font-medium text-slate-500 uppercase tracking-wide">
             {filters ? `${periodLabel} Balance` : 'Current Balance'}
           </h2>
-          <p className="text-2xl font-bold text-slate-900 mt-1">${overview.balance.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-slate-900 mt-1">{formatCurrency(overview.balance)}</p>
           {filters && (
             <p className="text-[10px] text-slate-400 mt-1">for selected period</p>
           )}
@@ -90,7 +100,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
           <h2 className="text-xs font-medium text-slate-500 uppercase tracking-wide">
             {filters ? `${periodLabel} Cleared` : 'Cleared Balance'}
           </h2>
-          <p className="text-2xl font-bold text-green-600 mt-1">${overview.clearedBalance.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-green-600 mt-1">{formatCurrency(overview.clearedBalance)}</p>
           {filters && (
             <p className="text-[10px] text-slate-400 mt-1">for selected period</p>
           )}
@@ -100,7 +110,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
           <h2 className="text-xs font-medium text-slate-500 uppercase tracking-wide">
             {filters ? `${periodLabel} Pending` : 'Pending'}
           </h2>
-          <p className="text-2xl font-bold text-amber-600 mt-1">${overview.pendingBalance.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-amber-600 mt-1">{formatCurrency(overview.pendingBalance)}</p>
           {filters && (
             <p className="text-[10px] text-slate-400 mt-1">for selected period</p>
           )}
@@ -110,7 +120,12 @@ export default async function DashboardPage({ searchParams }: PageProps) {
       <div className="space-y-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <h2 className="text-xl font-bold text-slate-900">{headingText}</h2>
-          <DashboardFilters monthOptions={monthOptions} fiscalYearOptions={fiscalYearOptions} />
+          <DashboardFilters
+            monthOptions={monthOptions}
+            fiscalYearOptions={fiscalYearOptions}
+            defaultYear={effectiveYear}
+            defaultMonth={effectiveMonth}
+          />
         </div>
 
         {!hasData ? (
@@ -155,12 +170,12 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                               key={`${month}-${cat}`}
                               className="px-3 py-2 text-xs text-right font-medium text-green-600"
                             >
-                              {val !== 0 ? `$${val.toFixed(2)}` : '-'}
+                              {val !== 0 ? formatCurrency(val) : '-'}
                             </td>
                           )
                         })}
                         <td className="px-3 py-2 text-xs text-right font-bold border-l border-slate-200 bg-slate-50 text-slate-900">
-                          ${pivot.monthTotals[month] >= 0 ? pivot.monthTotals[month].toFixed(2) : '0.00'}
+                          {formatCurrency(Math.max(pivot.monthTotals[month], 0))}
                         </td>
                       </tr>
                     ))}
@@ -175,12 +190,12 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                           className="px-3 py-2 text-xs text-right font-bold text-green-700"
                         >
                           {pivot.categoryTotals[cat] !== 0
-                            ? `$${pivot.categoryTotals[cat].toFixed(2)}`
+                            ? formatCurrency(pivot.categoryTotals[cat])
                             : '-'}
                         </td>
                       ))}
                       <td className="px-3 py-2 text-xs text-right font-bold border-l border-slate-200 text-slate-900">
-                        ${pivot.depositTotal.toFixed(2)}
+                        {formatCurrency(pivot.depositTotal)}
                       </td>
                     </tr>
                   </tbody>
@@ -230,12 +245,12 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                               key={`${month}-${cat}`}
                               className="px-3 py-2 text-xs text-right font-medium text-red-600"
                             >
-                              {val !== 0 ? `$${val.toFixed(2)}` : '-'}
+                              {val !== 0 ? formatCurrency(val) : '-'}
                             </td>
                           )
                         })}
                         <td className="px-3 py-2 text-xs text-right font-bold border-l border-slate-200 bg-slate-50 text-red-700">
-                          ${Math.abs(pivot.monthTotals[month] < 0 ? pivot.monthTotals[month] : 0).toFixed(2)}
+                          {pivot.monthTotals[month] < 0 ? formatCurrency(pivot.monthTotals[month]) : '-'}
                         </td>
                       </tr>
                     ))}
@@ -250,12 +265,12 @@ export default async function DashboardPage({ searchParams }: PageProps) {
                           className="px-3 py-2 text-xs text-right font-bold text-red-700"
                         >
                           {pivot.categoryTotals[cat] !== 0
-                            ? `$${Math.abs(pivot.categoryTotals[cat]).toFixed(2)}`
+                            ? formatCurrency(pivot.categoryTotals[cat])
                             : '-'}
                         </td>
                       ))}
                       <td className="px-3 py-2 text-xs text-right font-bold border-l border-slate-200 text-red-800">
-                        ${Math.abs(pivot.withdrawalTotal).toFixed(2)}
+                        {pivot.withdrawalTotal !== 0 ? formatCurrency(pivot.withdrawalTotal) : '-'}
                       </td>
                     </tr>
                   </tbody>
