@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { put } from '@vercel/blob'
 import { setDbError, getDbError, clearDbError } from '@/lib/db-status'
-import { demoTransactions, demoVouchers, getDemoOverview } from '@/lib/demo-data'
+import { demoTransactions, demoVouchers } from '@/lib/demo-data'
 
 const categories = [
   'Concessions (D)',
@@ -258,6 +258,123 @@ export async function getVouchers() {
     handleDbError(error)
     setDbError('Database not connected - showing demo data')
     return demoVouchers as unknown as Array<any>
+  }
+}
+
+export interface ReceiptData {
+  id: string
+  imageUrl: string
+  transactionId: string
+  createdAt: Date
+}
+
+export async function getTransactionReceipts(transactionId: string) {
+  if (useDemoMode) {
+    // Return empty array for demo mode
+    return [] as ReceiptData[]
+  }
+  try {
+    const receipts = await prisma.receipt.findMany({
+      where: { transactionId },
+      orderBy: { createdAt: 'asc' },
+    })
+    return receipts
+  } catch (error) {
+    handleDbError(error)
+    return [] as ReceiptData[]
+  }
+}
+
+export async function uploadReceiptImage(transactionId: string, formData: FormData) {
+  if (useDemoMode || await isDbEmpty()) {
+    return { success: true, message: 'Demo mode: file uploads not saved. Connect a database to persist data.' }
+  }
+  try {
+    const file = formData.get('receipt') as File
+    if (!file) throw new Error('No file provided')
+
+    // Check current receipt count (max 3)
+    const existingReceipts = await prisma.receipt.count({
+      where: { transactionId },
+    })
+    if (existingReceipts >= 3) {
+      return { success: false, error: 'Maximum 3 receipts allowed per transaction' }
+    }
+
+    const blob = await put(`receipts/${transactionId}-${Date.now()}-${file.name}`, file, {
+      access: 'public',
+    })
+
+    await prisma.receipt.create({
+      data: {
+        transactionId,
+        imageUrl: blob.url,
+      },
+    })
+
+    revalidatePath('/ledger')
+    revalidatePath('/')
+    return { success: true, url: blob.url }
+  } catch (error) {
+    const message = handleDbError(error)
+    return { success: false, error: message }
+  }
+}
+
+export async function deleteReceiptImage(receiptId: string) {
+  if (useDemoMode || await isDbEmpty()) {
+    return { success: true, message: 'Demo mode: changes not saved. Connect a database to persist data.' }
+  }
+  try {
+    await prisma.receipt.delete({
+      where: { id: receiptId },
+    })
+    revalidatePath('/ledger')
+    return { success: true }
+  } catch (error) {
+    const message = handleDbError(error)
+    return { success: false, error: message }
+  }
+}
+
+export async function updateTransactionNotes(transactionId: string, notes: string) {
+  if (useDemoMode || await isDbEmpty()) {
+    return { success: true, message: 'Demo mode: changes not saved. Connect a database to persist data.' }
+  }
+  try {
+    await prisma.transaction.update({
+      where: { id: transactionId },
+      data: { notes },
+    })
+    revalidatePath('/ledger')
+    return { success: true }
+  } catch (error) {
+    const message = handleDbError(error)
+    return { success: false, error: message }
+  }
+}
+
+export async function getTransactionWithReceipts(id: string) {
+  if (useDemoMode) {
+    const transaction = demoTransactions.find(t => t.id === id)
+    if (transaction) {
+      return { ...transaction, receipts: [] }
+    }
+    return null
+  }
+  try {
+    const transaction = await prisma.transaction.findUnique({
+      where: { id },
+      include: {
+        receipts: {
+          orderBy: { createdAt: 'asc' },
+        },
+      },
+    })
+    return transaction
+  } catch (error) {
+    handleDbError(error)
+    return null
   }
 }
 

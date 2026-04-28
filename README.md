@@ -1,4 +1,4 @@
-# Booster Club Accounting App
+# SPHS Band Booster
 
 A full-stack financial management application for booster clubs, deployed on Vercel with a persistent PostgreSQL database.
 

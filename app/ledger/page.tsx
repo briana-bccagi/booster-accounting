@@ -8,6 +8,10 @@ import {
   deleteTransaction,
   toggleCleared,
   getTransactions,
+  getTransactionReceipts,
+  uploadReceiptImage,
+  deleteReceiptImage,
+  updateTransactionNotes,
   type TransactionInput,
 } from '../actions'
 
@@ -24,6 +28,13 @@ const categories = [
   'Director of Band (W)',
 ] as const
 
+interface Receipt {
+  id: string
+  imageUrl: string
+  transactionId: string
+  createdAt: string | Date
+}
+
 interface Transaction {
   id: string
   date: string
@@ -33,6 +44,8 @@ interface Transaction {
   amount: number
   type: string
   cleared: boolean
+  notes?: string | null
+  receipts?: Receipt[]
 }
 
 export default function LedgerPage() {
@@ -40,14 +53,11 @@ export default function LedgerPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [formData, setFormData] = useState<TransactionInput>({
-    date: new Date().toISOString().split('T')[0],
-    category: categories[0],
-    vendor: '',
-    amount: '',
-    type: 'DEPOSIT',
-    cleared: false,
-  })
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [uploadingIds, setUploadingIds] = useState<Set<string>>(new Set())
+  const [editingNotesId, setEditingNotesId] = useState<string | null>(null)
+  const [noteText, setNoteText] = useState('')
+  const [receipts, setReceipts] = useState<Record<string, Receipt[]>>({})
 
   const router = useRouter()
 
@@ -60,6 +70,11 @@ export default function LedgerPage() {
     const data = await getTransactions()
     setTransactions(data as unknown as Transaction[])
     setLoading(false)
+  }
+
+  async function loadReceipts(transactionId: string) {
+    const data = await getTransactionReceipts(transactionId)
+    setReceipts(prev => ({ ...prev, [transactionId]: data }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -111,6 +126,68 @@ export default function LedgerPage() {
     await loadTransactions()
     router.refresh()
   }
+
+  const handleExpand = async (id: string) => {
+    if (expandedId === id) {
+      setExpandedId(null)
+    } else {
+      setExpandedId(id)
+      await loadReceipts(id)
+    }
+  }
+
+  const handleFileUpload = async (transactionId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploadingIds(prev => new Set(prev).add(transactionId))
+    const formData = new FormData()
+    formData.append('receipt', file)
+
+    try {
+      const currentReceipts = receipts[transactionId] || []
+      if (currentReceipts.length >= 3) {
+        alert('Maximum 3 receipts allowed per transaction')
+        return
+      }
+
+      await uploadReceiptImage(transactionId, formData)
+      await loadReceipts(transactionId)
+    } catch (error) {
+      alert('Failed to upload receipt')
+    } finally {
+      setUploadingIds(prev => {
+        const next = new Set(prev)
+        next.delete(transactionId)
+        return next
+      })
+    }
+  }
+
+  const handleDeleteReceipt = async (receiptId: string, transactionId: string) => {
+    if (confirm('Are you sure you want to delete this receipt?')) {
+      await deleteReceiptImage(receiptId)
+      await loadReceipts(transactionId)
+    }
+  }
+
+  const handleSaveNotes = async (transactionId: string) => {
+    await updateTransactionNotes(transactionId, noteText)
+    setEditingNotesId(null)
+    // Update local state
+    setTransactions(prev => prev.map(t => 
+      t.id === transactionId ? { ...t, notes: noteText } : t
+    ))
+  }
+
+  const [formData, setFormData] = useState<TransactionInput>({
+    date: new Date().toISOString().split('T')[0],
+    category: categories[0],
+    vendor: '',
+    amount: '',
+    type: 'DEPOSIT',
+    cleared: false,
+  })
 
   if (loading) {
     return <div className="text-center py-8">Loading...</div>
@@ -236,8 +313,9 @@ export default function LedgerPage() {
           <table className="w-full">
             <thead className="bg-slate-50">
               <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Item #</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"></th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Date</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Voucher #</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Category</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Vendor</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Type</th>
@@ -249,67 +327,220 @@ export default function LedgerPage() {
             <tbody className="divide-y divide-slate-200">
               {transactions.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-slate-500">
+                  <td colSpan={9} className="px-4 py-8 text-center text-slate-500">
                     No transactions yet. Click "Add Transaction" to get started.
                   </td>
                 </tr>
               ) : (
-                transactions.map((t) => (
-                  <tr key={t.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-900">
-                      {new Date(t.date).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-slate-900">
-                      #{t.voucherNumber}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-600">
-                      {t.category}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-900">
-                      {t.vendor}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm">
-                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                        t.type === 'DEPOSIT'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {t.type}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-right font-medium">
-                      <span className={t.type === 'DEPOSIT' ? 'text-green-600' : 'text-red-600'}>
-                        {t.type === 'DEPOSIT' ? '+' : '-'}${Number(t.amount).toFixed(2)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-center">
-                      <button
-                        onClick={() => handleToggleCleared(t.id, t.cleared)}
-                        className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full cursor-pointer ${
-                          t.cleared
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}
-                      >
-                        {t.cleared ? 'Yes' : 'No'}
-                      </button>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-right text-sm space-x-2">
-                      <button
-                        onClick={() => handleEdit(t)}
-                        className="text-blue-600 hover:text-blue-800 font-medium"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(t.id)}
-                        className="text-red-600 hover:text-red-800 font-medium"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                transactions.map((t) => {
+                  const transactionReceipts = receipts[t.id] || []
+                  const isExpanded = expandedId === t.id
+                  const isUploading = uploadingIds.has(t.id)
+                  const isEditingNotes = editingNotesId === t.id
+
+                  return (
+                    <>
+                      <tr key={t.id} className="hover:bg-slate-50">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-slate-900">
+                          #{t.voucherNumber}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <button
+                            onClick={() => handleExpand(t.id)}
+                            className="text-slate-400 hover:text-slate-600 transition-colors"
+                          >
+                            {isExpanded ? (
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              </svg>
+                            ) : (
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            )}
+                          </button>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-900">
+                          {new Date(t.date).toLocaleDateString()}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-600">
+                          {t.category}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-900">
+                          {t.vendor}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm">
+                          <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                            t.type === 'DEPOSIT'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {t.type}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-right font-medium">
+                          <span className={t.type === 'DEPOSIT' ? 'text-green-600' : 'text-red-600'}>
+                            {t.type === 'DEPOSIT' ? '+' : '-'}${Number(t.amount).toFixed(2)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-center">
+                          <button
+                            onClick={() => handleToggleCleared(t.id, t.cleared)}
+                            className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full cursor-pointer ${
+                              t.cleared
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-amber-100 text-amber-800'
+                            }`}
+                          >
+                            {t.cleared ? 'Yes' : 'No'}
+                          </button>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-right text-sm space-x-2">
+                          <button
+                            onClick={() => handleEdit(t)}
+                            className="text-blue-600 hover:text-blue-800 font-medium"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(t.id)}
+                            className="text-red-600 hover:text-red-800 font-medium"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+
+                      {/* Expanded Details Row */}
+                      {isExpanded && (
+                        <tr>
+                          <td colSpan={9} className="px-4 py-4 bg-slate-50 border-t border-slate-200">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {/* Receipts Section */}
+                              <div>
+                                <h4 className="text-sm font-semibold text-slate-700 mb-3">
+                                  Receipts ({transactionReceipts.length}/3)
+                                </h4>
+                                
+                                {transactionReceipts.length > 0 && (
+                                  <div className="grid grid-cols-3 gap-2 mb-3">
+                                    {transactionReceipts.map((r) => (
+                                      <div key={r.id} className="relative group">
+                                        <a
+                                          href={r.imageUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                        >
+                                          <img
+                                            src={r.imageUrl}
+                                            alt={`Receipt for ${t.vendor}`}
+                                            className="w-full h-20 object-cover rounded-md border border-slate-200 cursor-pointer hover:opacity-90 transition-opacity"
+                                          />
+                                        </a>
+                                        <button
+                                          onClick={() => handleDeleteReceipt(r.id, t.id)}
+                                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                                        >
+                                          ×
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {transactionReceipts.length < 3 ? (
+                                  <label className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-slate-300 rounded-md cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={(e) => handleFileUpload(t.id, e)}
+                                      className="hidden"
+                                      disabled={isUploading}
+                                    />
+                                    {isUploading ? (
+                                      <span className="text-sm text-slate-500">Uploading...</span>
+                                    ) : (
+                                      <>
+                                        <svg className="w-6 h-6 text-slate-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span className="text-xs text-slate-500">Upload Receipt</span>
+                                      </>
+                                    )}
+                                  </label>
+                                ) : (
+                                  <p className="text-xs text-slate-500 text-center py-2">
+                                    Maximum 3 receipts reached
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Notes Section */}
+                              <div>
+                                <h4 className="text-sm font-semibold text-slate-700 mb-3">Notes</h4>
+                                
+                                {isEditingNotes ? (
+                                  <div className="space-y-2">
+                                    <textarea
+                                      value={noteText}
+                                      onChange={(e) => setNoteText(e.target.value)}
+                                      placeholder="Add notes about this transaction..."
+                                      className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                      rows={4}
+                                    />
+                                    <div className="flex space-x-2">
+                                      <button
+                                        onClick={() => handleSaveNotes(t.id)}
+                                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
+                                      >
+                                        Save
+                                      </button>
+                                      <button
+                                        onClick={() => setEditingNotesId(null)}
+                                        className="px-3 py-1 border border-slate-300 text-sm rounded-md hover:bg-slate-50"
+                                      >
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div>
+                                    {t.notes ? (
+                                      <div className="space-y-2">
+                                        <p className="text-sm text-slate-600 bg-white p-3 rounded-md border border-slate-200">
+                                          {t.notes}
+                                        </p>
+                                        <button
+                                          onClick={() => {
+                                            setEditingNotesId(t.id)
+                                            setNoteText(t.notes || '')
+                                          }}
+                                          className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                        >
+                                          Edit Notes
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <button
+                                        onClick={() => {
+                                          setEditingNotesId(t.id)
+                                          setNoteText('')
+                                        }}
+                                        className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                      >
+                                        + Add Notes
+                                      </button>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </>
+                  )
+                })
               )}
             </tbody>
           </table>
@@ -318,4 +549,3 @@ export default function LedgerPage() {
     </div>
   )
 }
-

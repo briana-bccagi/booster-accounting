@@ -11,13 +11,15 @@ export const demoTransactions = [
     amount: 425.5,
     type: 'DEPOSIT',
     cleared: true,
+    notes: 'January basketball home game concessions',
+    receipts: [],
     createdAt: new Date('2026-01-05'),
     updatedAt: new Date('2026-01-05'),
     voucher: {
       id: 'v-1',
       voucherNumber: 1,
       receiptImageUrl: null,
-      notes: 'January basketball home game concessions',
+      notes: null,
       createdAt: new Date('2026-01-05'),
       updatedAt: new Date('2026-01-05'),
     },
@@ -31,13 +33,15 @@ export const demoTransactions = [
     amount: 500.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: 'Annual donation for band program. Check #1234 attached.',
+    receipts: [],
     createdAt: new Date('2026-01-08'),
     updatedAt: new Date('2026-01-08'),
     voucher: {
       id: 'v-2',
       voucherNumber: 2,
       receiptImageUrl: null,
-      notes: 'Annual donation for band program',
+      notes: null,
       createdAt: new Date('2026-01-08'),
       updatedAt: new Date('2026-01-08'),
     },
@@ -51,13 +55,15 @@ export const demoTransactions = [
     amount: 890.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: 'Winter fundraiser — cookie dough sales. Sold 89 tubes at $10 each.',
+    receipts: [],
     createdAt: new Date('2026-01-12'),
     updatedAt: new Date('2026-01-12'),
     voucher: {
       id: 'v-3',
       voucherNumber: 3,
       receiptImageUrl: null,
-      notes: 'Winter fundraiser — cookie dough sales',
+      notes: null,
       createdAt: new Date('2026-01-12'),
       updatedAt: new Date('2026-01-12'),
     },
@@ -71,13 +77,15 @@ export const demoTransactions = [
     amount: 12.45,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-01-15'),
     updatedAt: new Date('2026-01-15'),
     voucher: {
       id: 'v-4',
       voucherNumber: 4,
       receiptImageUrl: null,
-      notes: 'Monthly interest credit',
+      notes: null,
       createdAt: new Date('2026-01-15'),
       updatedAt: new Date('2026-01-15'),
     },
@@ -91,13 +99,15 @@ export const demoTransactions = [
     amount: 340.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: 'Band family garage sale proceeds. Thank you to all volunteers!',
+    receipts: [],
     createdAt: new Date('2026-01-18'),
     updatedAt: new Date('2026-01-18'),
     voucher: {
       id: 'v-5',
       voucherNumber: 5,
       receiptImageUrl: null,
-      notes: 'Band family garage sale proceeds',
+      notes: null,
       createdAt: new Date('2026-01-18'),
       updatedAt: new Date('2026-01-18'),
     },
@@ -111,13 +121,15 @@ export const demoTransactions = [
     amount: 275.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-01-20'),
     updatedAt: new Date('2026-01-20'),
     voucher: {
       id: 'v-6',
       voucherNumber: 6,
       receiptImageUrl: null,
-      notes: 'Credit card batch — January events',
+      notes: null,
       createdAt: new Date('2026-01-20'),
       updatedAt: new Date('2026-01-20'),
     },
@@ -131,13 +143,15 @@ export const demoTransactions = [
     amount: 325.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-01-10'),
     updatedAt: new Date('2026-01-10'),
     voucher: {
       id: 'v-7',
       voucherNumber: 7,
       receiptImageUrl: null,
-      notes: 'Concession supplies restock',
+      notes: null,
       createdAt: new Date('2026-01-10'),
       updatedAt: new Date('2026-01-10'),
     },
@@ -151,13 +165,15 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-01-22'),
     updatedAt: new Date('2026-01-22'),
     voucher: {
       id: 'v-8',
       voucherNumber: 8,
       receiptImageUrl: null,
-      notes: 'Monthly account service fee',
+      notes: null,
       createdAt: new Date('2026-01-22'),
       updatedAt: new Date('2026-01-22'),
     },
@@ -171,13 +187,15 @@ export const demoTransactions = [
     amount: 145.33,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-01-25'),
     updatedAt: new Date('2026-01-25'),
     voucher: {
       id: 'v-9',
       voucherNumber: 9,
       receiptImageUrl: null,
-      notes: 'Office supplies for band office',
+      notes: null,
       createdAt: new Date('2026-01-25'),
       updatedAt: new Date('2026-01-25'),
     },
@@ -191,13 +209,15 @@ export const demoTransactions = [
     amount: 675.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-01-28'),
     updatedAt: new Date('2026-01-28'),
     voucher: {
       id: 'v-10',
       voucherNumber: 10,
       receiptImageUrl: null,
-      notes: 'Sheet music for spring concert',
+      notes: null,
       createdAt: new Date('2026-01-28'),
       updatedAt: new Date('2026-01-28'),
     },
@@ -215,6 +235,8 @@ export const demoTransactions = [
     amount: 580.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-02-02'),
     updatedAt: new Date('2026-02-02'),
     voucher: {
@@ -235,6 +257,8 @@ export const demoTransactions = [
     amount: 750.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-02-05'),
     updatedAt: new Date('2026-02-05'),
     voucher: {
@@ -255,6 +279,8 @@ export const demoTransactions = [
     amount: 1120.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-02-10'),
     updatedAt: new Date('2026-02-10'),
     voucher: {
@@ -275,6 +301,8 @@ export const demoTransactions = [
     amount: 14.22,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-02-14'),
     updatedAt: new Date('2026-02-14'),
     voucher: {
@@ -295,6 +323,8 @@ export const demoTransactions = [
     amount: 420.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-02-18'),
     updatedAt: new Date('2026-02-18'),
     voucher: {
@@ -315,6 +345,8 @@ export const demoTransactions = [
     amount: 390.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-02-22'),
     updatedAt: new Date('2026-02-22'),
     voucher: {
@@ -335,6 +367,8 @@ export const demoTransactions = [
     amount: 425.75,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-02-08'),
     updatedAt: new Date('2026-02-08'),
     voucher: {
@@ -355,6 +389,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-02-20'),
     updatedAt: new Date('2026-02-20'),
     voucher: {
@@ -375,6 +411,8 @@ export const demoTransactions = [
     amount: 178.5,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-02-24'),
     updatedAt: new Date('2026-02-24'),
     voucher: {
@@ -395,6 +433,8 @@ export const demoTransactions = [
     amount: 1200.0,
     type: 'WITHDRAWAL',
     cleared: false,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-02-28'),
     updatedAt: new Date('2026-02-28'),
     voucher: {
@@ -419,6 +459,8 @@ export const demoTransactions = [
     amount: 890.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-03-01'),
     updatedAt: new Date('2026-03-01'),
     voucher: {
@@ -439,6 +481,8 @@ export const demoTransactions = [
     amount: 1000.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-03-05'),
     updatedAt: new Date('2026-03-05'),
     voucher: {
@@ -459,6 +503,8 @@ export const demoTransactions = [
     amount: 650.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-03-10'),
     updatedAt: new Date('2026-03-10'),
     voucher: {
@@ -479,6 +525,8 @@ export const demoTransactions = [
     amount: 15.8,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-03-15'),
     updatedAt: new Date('2026-03-15'),
     voucher: {
@@ -499,6 +547,8 @@ export const demoTransactions = [
     amount: 1250.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-03-18'),
     updatedAt: new Date('2026-03-18'),
     voucher: {
@@ -519,6 +569,8 @@ export const demoTransactions = [
     amount: 445.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-03-22'),
     updatedAt: new Date('2026-03-22'),
     voucher: {
@@ -539,6 +591,8 @@ export const demoTransactions = [
     amount: 280.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-03-08'),
     updatedAt: new Date('2026-03-08'),
     voucher: {
@@ -559,6 +613,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-03-20'),
     updatedAt: new Date('2026-03-20'),
     voucher: {
@@ -579,6 +635,8 @@ export const demoTransactions = [
     amount: 89.99,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-03-25'),
     updatedAt: new Date('2026-03-25'),
     voucher: {
@@ -599,6 +657,8 @@ export const demoTransactions = [
     amount: 1850.0,
     type: 'WITHDRAWAL',
     cleared: false,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-03-28'),
     updatedAt: new Date('2026-03-28'),
     voucher: {
@@ -623,6 +683,8 @@ export const demoTransactions = [
     amount: 1250.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-04-02'),
     updatedAt: new Date('2026-04-02'),
     voucher: {
@@ -643,6 +705,8 @@ export const demoTransactions = [
     amount: 2500.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-04-08'),
     updatedAt: new Date('2026-04-08'),
     voucher: {
@@ -663,6 +727,8 @@ export const demoTransactions = [
     amount: 480.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-04-12'),
     updatedAt: new Date('2026-04-12'),
     voucher: {
@@ -683,6 +749,8 @@ export const demoTransactions = [
     amount: 18.42,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-04-15'),
     updatedAt: new Date('2026-04-15'),
     voucher: {
@@ -703,6 +771,8 @@ export const demoTransactions = [
     amount: 560.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-04-18'),
     updatedAt: new Date('2026-04-18'),
     voucher: {
@@ -723,6 +793,8 @@ export const demoTransactions = [
     amount: 520.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-04-22'),
     updatedAt: new Date('2026-04-22'),
     voucher: {
@@ -743,6 +815,8 @@ export const demoTransactions = [
     amount: 395.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-04-05'),
     updatedAt: new Date('2026-04-05'),
     voucher: {
@@ -763,6 +837,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-04-20'),
     updatedAt: new Date('2026-04-20'),
     voucher: {
@@ -783,6 +859,8 @@ export const demoTransactions = [
     amount: 234.99,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-04-25'),
     updatedAt: new Date('2026-04-25'),
     voucher: {
@@ -803,6 +881,8 @@ export const demoTransactions = [
     amount: 950.0,
     type: 'WITHDRAWAL',
     cleared: false,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-04-28'),
     updatedAt: new Date('2026-04-28'),
     voucher: {
@@ -827,6 +907,8 @@ export const demoTransactions = [
     amount: 380.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-05-03'),
     updatedAt: new Date('2026-05-03'),
     voucher: {
@@ -847,6 +929,8 @@ export const demoTransactions = [
     amount: 1500.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-05-08'),
     updatedAt: new Date('2026-05-08'),
     voucher: {
@@ -867,6 +951,8 @@ export const demoTransactions = [
     amount: 200.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-05-12'),
     updatedAt: new Date('2026-05-12'),
     voucher: {
@@ -887,6 +973,8 @@ export const demoTransactions = [
     amount: 16.85,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-05-15'),
     updatedAt: new Date('2026-05-15'),
     voucher: {
@@ -907,6 +995,8 @@ export const demoTransactions = [
     amount: 420.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-05-18'),
     updatedAt: new Date('2026-05-18'),
     voucher: {
@@ -927,6 +1017,8 @@ export const demoTransactions = [
     amount: 310.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-05-22'),
     updatedAt: new Date('2026-05-22'),
     voucher: {
@@ -947,6 +1039,8 @@ export const demoTransactions = [
     amount: 315.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-05-05'),
     updatedAt: new Date('2026-05-05'),
     voucher: {
@@ -967,6 +1061,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-05-20'),
     updatedAt: new Date('2026-05-20'),
     voucher: {
@@ -987,6 +1083,8 @@ export const demoTransactions = [
     amount: 300.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-05-25'),
     updatedAt: new Date('2026-05-25'),
     voucher: {
@@ -1007,6 +1105,8 @@ export const demoTransactions = [
     amount: 450.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-05-28'),
     updatedAt: new Date('2026-05-28'),
     voucher: {
@@ -1031,6 +1131,8 @@ export const demoTransactions = [
     amount: 780.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-06-05'),
     updatedAt: new Date('2026-06-05'),
     voucher: {
@@ -1051,6 +1153,8 @@ export const demoTransactions = [
     amount: 800.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-06-10'),
     updatedAt: new Date('2026-06-10'),
     voucher: {
@@ -1071,6 +1175,8 @@ export const demoTransactions = [
     amount: 320.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-06-15'),
     updatedAt: new Date('2026-06-15'),
     voucher: {
@@ -1091,6 +1197,8 @@ export const demoTransactions = [
     amount: 14.55,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-06-15'),
     updatedAt: new Date('2026-06-15'),
     voucher: {
@@ -1111,6 +1219,8 @@ export const demoTransactions = [
     amount: 450.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-06-18'),
     updatedAt: new Date('2026-06-18'),
     voucher: {
@@ -1131,6 +1241,8 @@ export const demoTransactions = [
     amount: 285.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-06-22'),
     updatedAt: new Date('2026-06-22'),
     voucher: {
@@ -1151,6 +1263,8 @@ export const demoTransactions = [
     amount: 275.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-06-08'),
     updatedAt: new Date('2026-06-08'),
     voucher: {
@@ -1171,6 +1285,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-06-20'),
     updatedAt: new Date('2026-06-20'),
     voucher: {
@@ -1191,6 +1307,8 @@ export const demoTransactions = [
     amount: 189.99,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-06-25'),
     updatedAt: new Date('2026-06-25'),
     voucher: {
@@ -1211,6 +1329,8 @@ export const demoTransactions = [
     amount: 3200.0,
     type: 'WITHDRAWAL',
     cleared: false,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-06-28'),
     updatedAt: new Date('2026-06-28'),
     voucher: {
@@ -1235,6 +1355,8 @@ export const demoTransactions = [
     amount: 950.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-07-04'),
     updatedAt: new Date('2026-07-04'),
     voucher: {
@@ -1255,6 +1377,8 @@ export const demoTransactions = [
     amount: 1200.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-07-08'),
     updatedAt: new Date('2026-07-08'),
     voucher: {
@@ -1275,6 +1399,8 @@ export const demoTransactions = [
     amount: 280.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-07-12'),
     updatedAt: new Date('2026-07-12'),
     voucher: {
@@ -1295,6 +1421,8 @@ export const demoTransactions = [
     amount: 13.22,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-07-15'),
     updatedAt: new Date('2026-07-15'),
     voucher: {
@@ -1315,6 +1443,8 @@ export const demoTransactions = [
     amount: 350.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-07-18'),
     updatedAt: new Date('2026-07-18'),
     voucher: {
@@ -1335,6 +1465,8 @@ export const demoTransactions = [
     amount: 240.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-07-22'),
     updatedAt: new Date('2026-07-22'),
     voucher: {
@@ -1355,6 +1487,8 @@ export const demoTransactions = [
     amount: 245.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-07-05'),
     updatedAt: new Date('2026-07-05'),
     voucher: {
@@ -1375,6 +1509,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-07-20'),
     updatedAt: new Date('2026-07-20'),
     voucher: {
@@ -1395,6 +1531,8 @@ export const demoTransactions = [
     amount: 156.5,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-07-25'),
     updatedAt: new Date('2026-07-25'),
     voucher: {
@@ -1415,6 +1553,8 @@ export const demoTransactions = [
     amount: 890.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-07-28'),
     updatedAt: new Date('2026-07-28'),
     voucher: {
@@ -1439,6 +1579,8 @@ export const demoTransactions = [
     amount: 420.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-08-05'),
     updatedAt: new Date('2026-08-05'),
     voucher: {
@@ -1459,6 +1601,8 @@ export const demoTransactions = [
     amount: 1200.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-08-10'),
     updatedAt: new Date('2026-08-10'),
     voucher: {
@@ -1479,6 +1623,8 @@ export const demoTransactions = [
     amount: 680.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-08-15'),
     updatedAt: new Date('2026-08-15'),
     voucher: {
@@ -1499,6 +1645,8 @@ export const demoTransactions = [
     amount: 12.88,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-08-15'),
     updatedAt: new Date('2026-08-15'),
     voucher: {
@@ -1519,6 +1667,8 @@ export const demoTransactions = [
     amount: 600.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-08-18'),
     updatedAt: new Date('2026-08-18'),
     voucher: {
@@ -1539,6 +1689,8 @@ export const demoTransactions = [
     amount: 380.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-08-22'),
     updatedAt: new Date('2026-08-22'),
     voucher: {
@@ -1559,6 +1711,8 @@ export const demoTransactions = [
     amount: 385.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-08-05'),
     updatedAt: new Date('2026-08-05'),
     voucher: {
@@ -1579,6 +1733,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-08-20'),
     updatedAt: new Date('2026-08-20'),
     voucher: {
@@ -1599,6 +1755,8 @@ export const demoTransactions = [
     amount: 299.99,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-08-25'),
     updatedAt: new Date('2026-08-25'),
     voucher: {
@@ -1619,6 +1777,8 @@ export const demoTransactions = [
     amount: 750.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-08-28'),
     updatedAt: new Date('2026-08-28'),
     voucher: {
@@ -1643,6 +1803,8 @@ export const demoTransactions = [
     amount: 875.5,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-09-05'),
     updatedAt: new Date('2026-09-05'),
     voucher: {
@@ -1663,6 +1825,8 @@ export const demoTransactions = [
     amount: 550.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-09-08'),
     updatedAt: new Date('2026-09-08'),
     voucher: {
@@ -1683,6 +1847,8 @@ export const demoTransactions = [
     amount: 1350.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-09-12'),
     updatedAt: new Date('2026-09-12'),
     voucher: {
@@ -1703,6 +1869,8 @@ export const demoTransactions = [
     amount: 14.65,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-09-15'),
     updatedAt: new Date('2026-09-15'),
     voucher: {
@@ -1723,6 +1891,8 @@ export const demoTransactions = [
     amount: 390.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-09-18'),
     updatedAt: new Date('2026-09-18'),
     voucher: {
@@ -1743,6 +1913,8 @@ export const demoTransactions = [
     amount: 445.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-09-22'),
     updatedAt: new Date('2026-09-22'),
     voucher: {
@@ -1763,6 +1935,8 @@ export const demoTransactions = [
     amount: 425.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-09-08'),
     updatedAt: new Date('2026-09-08'),
     voucher: {
@@ -1783,6 +1957,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-09-20'),
     updatedAt: new Date('2026-09-20'),
     voucher: {
@@ -1803,6 +1979,8 @@ export const demoTransactions = [
     amount: 210.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-09-25'),
     updatedAt: new Date('2026-09-25'),
     voucher: {
@@ -1823,6 +2001,8 @@ export const demoTransactions = [
     amount: 1650.0,
     type: 'WITHDRAWAL',
     cleared: false,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-09-28'),
     updatedAt: new Date('2026-09-28'),
     voucher: {
@@ -1847,6 +2027,8 @@ export const demoTransactions = [
     amount: 1650.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-10-02'),
     updatedAt: new Date('2026-10-02'),
     voucher: {
@@ -1867,6 +2049,8 @@ export const demoTransactions = [
     amount: 2000.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-10-08'),
     updatedAt: new Date('2026-10-08'),
     voucher: {
@@ -1887,6 +2071,8 @@ export const demoTransactions = [
     amount: 520.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-10-12'),
     updatedAt: new Date('2026-10-12'),
     voucher: {
@@ -1907,6 +2093,8 @@ export const demoTransactions = [
     amount: 15.42,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-10-15'),
     updatedAt: new Date('2026-10-15'),
     voucher: {
@@ -1927,6 +2115,8 @@ export const demoTransactions = [
     amount: 480.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-10-18'),
     updatedAt: new Date('2026-10-18'),
     voucher: {
@@ -1947,6 +2137,8 @@ export const demoTransactions = [
     amount: 580.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-10-22'),
     updatedAt: new Date('2026-10-22'),
     voucher: {
@@ -1967,6 +2159,8 @@ export const demoTransactions = [
     amount: 525.75,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-10-05'),
     updatedAt: new Date('2026-10-05'),
     voucher: {
@@ -1987,6 +2181,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-10-20'),
     updatedAt: new Date('2026-10-20'),
     voucher: {
@@ -2007,6 +2203,8 @@ export const demoTransactions = [
     amount: 178.5,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-10-25'),
     updatedAt: new Date('2026-10-25'),
     voucher: {
@@ -2027,6 +2225,8 @@ export const demoTransactions = [
     amount: 2100.0,
     type: 'WITHDRAWAL',
     cleared: false,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-10-28'),
     updatedAt: new Date('2026-10-28'),
     voucher: {
@@ -2051,6 +2251,8 @@ export const demoTransactions = [
     amount: 1420.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-11-05'),
     updatedAt: new Date('2026-11-05'),
     voucher: {
@@ -2071,6 +2273,8 @@ export const demoTransactions = [
     amount: 1000.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-11-10'),
     updatedAt: new Date('2026-11-10'),
     voucher: {
@@ -2091,6 +2295,8 @@ export const demoTransactions = [
     amount: 780.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-11-14'),
     updatedAt: new Date('2026-11-14'),
     voucher: {
@@ -2111,6 +2317,8 @@ export const demoTransactions = [
     amount: 16.28,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-11-15'),
     updatedAt: new Date('2026-11-15'),
     voucher: {
@@ -2131,6 +2339,8 @@ export const demoTransactions = [
     amount: 380.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-11-18'),
     updatedAt: new Date('2026-11-18'),
     voucher: {
@@ -2151,6 +2361,8 @@ export const demoTransactions = [
     amount: 490.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-11-22'),
     updatedAt: new Date('2026-11-22'),
     voucher: {
@@ -2171,6 +2383,8 @@ export const demoTransactions = [
     amount: 365.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-11-05'),
     updatedAt: new Date('2026-11-05'),
     voucher: {
@@ -2191,6 +2405,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-11-20'),
     updatedAt: new Date('2026-11-20'),
     voucher: {
@@ -2211,6 +2427,8 @@ export const demoTransactions = [
     amount: 125.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-11-25'),
     updatedAt: new Date('2026-11-25'),
     voucher: {
@@ -2231,6 +2449,8 @@ export const demoTransactions = [
     amount: 1125.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-11-28'),
     updatedAt: new Date('2026-11-28'),
     voucher: {
@@ -2255,6 +2475,8 @@ export const demoTransactions = [
     amount: 1100.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-12-05'),
     updatedAt: new Date('2026-12-05'),
     voucher: {
@@ -2275,6 +2497,8 @@ export const demoTransactions = [
     amount: 3000.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-12-08'),
     updatedAt: new Date('2026-12-08'),
     voucher: {
@@ -2295,6 +2519,8 @@ export const demoTransactions = [
     amount: 650.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-12-12'),
     updatedAt: new Date('2026-12-12'),
     voucher: {
@@ -2315,6 +2541,8 @@ export const demoTransactions = [
     amount: 17.55,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-12-15'),
     updatedAt: new Date('2026-12-15'),
     voucher: {
@@ -2335,6 +2563,8 @@ export const demoTransactions = [
     amount: 220.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-12-18'),
     updatedAt: new Date('2026-12-18'),
     voucher: {
@@ -2355,6 +2585,8 @@ export const demoTransactions = [
     amount: 350.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-12-22'),
     updatedAt: new Date('2026-12-22'),
     voucher: {
@@ -2375,6 +2607,8 @@ export const demoTransactions = [
     amount: 780.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-12-05'),
     updatedAt: new Date('2026-12-05'),
     voucher: {
@@ -2395,6 +2629,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-12-20'),
     updatedAt: new Date('2026-12-20'),
     voucher: {
@@ -2415,6 +2651,8 @@ export const demoTransactions = [
     amount: 245.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-12-28'),
     updatedAt: new Date('2026-12-28'),
     voucher: {
@@ -2435,6 +2673,8 @@ export const demoTransactions = [
     amount: 1450.0,
     type: 'WITHDRAWAL',
     cleared: false,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2026-12-30'),
     updatedAt: new Date('2026-12-30'),
     voucher: {
@@ -2459,6 +2699,8 @@ export const demoTransactions = [
     amount: 465.5,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-01-05'),
     updatedAt: new Date('2027-01-05'),
     voucher: {
@@ -2479,6 +2721,8 @@ export const demoTransactions = [
     amount: 1800.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-01-08'),
     updatedAt: new Date('2027-01-08'),
     voucher: {
@@ -2499,6 +2743,8 @@ export const demoTransactions = [
     amount: 920.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-01-12'),
     updatedAt: new Date('2027-01-12'),
     voucher: {
@@ -2519,6 +2765,8 @@ export const demoTransactions = [
     amount: 18.75,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-01-15'),
     updatedAt: new Date('2027-01-15'),
     voucher: {
@@ -2539,6 +2787,8 @@ export const demoTransactions = [
     amount: 380.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-01-18'),
     updatedAt: new Date('2027-01-18'),
     voucher: {
@@ -2559,6 +2809,8 @@ export const demoTransactions = [
     amount: 295.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-01-22'),
     updatedAt: new Date('2027-01-22'),
     voucher: {
@@ -2579,6 +2831,8 @@ export const demoTransactions = [
     amount: 335.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-01-10'),
     updatedAt: new Date('2027-01-10'),
     voucher: {
@@ -2599,6 +2853,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-01-20'),
     updatedAt: new Date('2027-01-20'),
     voucher: {
@@ -2619,6 +2875,8 @@ export const demoTransactions = [
     amount: 165.33,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-01-25'),
     updatedAt: new Date('2027-01-25'),
     voucher: {
@@ -2639,6 +2897,8 @@ export const demoTransactions = [
     amount: 1850.0,
     type: 'WITHDRAWAL',
     cleared: false,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-01-28'),
     updatedAt: new Date('2027-01-28'),
     voucher: {
@@ -2663,6 +2923,8 @@ export const demoTransactions = [
     amount: 620.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-02-02'),
     updatedAt: new Date('2027-02-02'),
     voucher: {
@@ -2683,6 +2945,8 @@ export const demoTransactions = [
     amount: 800.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-02-05'),
     updatedAt: new Date('2027-02-05'),
     voucher: {
@@ -2703,6 +2967,8 @@ export const demoTransactions = [
     amount: 1180.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-02-10'),
     updatedAt: new Date('2027-02-10'),
     voucher: {
@@ -2723,6 +2989,8 @@ export const demoTransactions = [
     amount: 19.22,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-02-14'),
     updatedAt: new Date('2027-02-14'),
     voucher: {
@@ -2743,6 +3011,8 @@ export const demoTransactions = [
     amount: 420.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-02-18'),
     updatedAt: new Date('2027-02-18'),
     voucher: {
@@ -2763,6 +3033,8 @@ export const demoTransactions = [
     amount: 410.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-02-22'),
     updatedAt: new Date('2027-02-22'),
     voucher: {
@@ -2783,6 +3055,8 @@ export const demoTransactions = [
     amount: 445.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-02-08'),
     updatedAt: new Date('2027-02-08'),
     voucher: {
@@ -2803,6 +3077,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-02-20'),
     updatedAt: new Date('2027-02-20'),
     voucher: {
@@ -2823,6 +3099,8 @@ export const demoTransactions = [
     amount: 198.5,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-02-24'),
     updatedAt: new Date('2027-02-24'),
     voucher: {
@@ -2843,6 +3121,8 @@ export const demoTransactions = [
     amount: 725.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-02-28'),
     updatedAt: new Date('2027-02-28'),
     voucher: {
@@ -2867,6 +3147,8 @@ export const demoTransactions = [
     amount: 950.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-03-01'),
     updatedAt: new Date('2027-03-01'),
     voucher: {
@@ -2887,6 +3169,8 @@ export const demoTransactions = [
     amount: 1100.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-03-05'),
     updatedAt: new Date('2027-03-05'),
     voucher: {
@@ -2907,6 +3191,8 @@ export const demoTransactions = [
     amount: 580.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-03-10'),
     updatedAt: new Date('2027-03-10'),
     voucher: {
@@ -2927,6 +3213,8 @@ export const demoTransactions = [
     amount: 20.45,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-03-15'),
     updatedAt: new Date('2027-03-15'),
     voucher: {
@@ -2947,6 +3235,8 @@ export const demoTransactions = [
     amount: 1350.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-03-18'),
     updatedAt: new Date('2027-03-18'),
     voucher: {
@@ -2967,6 +3257,8 @@ export const demoTransactions = [
     amount: 465.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-03-22'),
     updatedAt: new Date('2027-03-22'),
     voucher: {
@@ -2987,6 +3279,8 @@ export const demoTransactions = [
     amount: 295.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-03-08'),
     updatedAt: new Date('2027-03-08'),
     voucher: {
@@ -3007,6 +3301,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-03-20'),
     updatedAt: new Date('2027-03-20'),
     voucher: {
@@ -3027,6 +3323,8 @@ export const demoTransactions = [
     amount: 95.99,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-03-25'),
     updatedAt: new Date('2027-03-25'),
     voucher: {
@@ -3047,6 +3345,8 @@ export const demoTransactions = [
     amount: 1950.0,
     type: 'WITHDRAWAL',
     cleared: false,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-03-28'),
     updatedAt: new Date('2027-03-28'),
     voucher: {
@@ -3071,6 +3371,8 @@ export const demoTransactions = [
     amount: 1350.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-04-02'),
     updatedAt: new Date('2027-04-02'),
     voucher: {
@@ -3091,6 +3393,8 @@ export const demoTransactions = [
     amount: 2800.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-04-08'),
     updatedAt: new Date('2027-04-08'),
     voucher: {
@@ -3111,6 +3415,8 @@ export const demoTransactions = [
     amount: 520.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-04-12'),
     updatedAt: new Date('2027-04-12'),
     voucher: {
@@ -3131,6 +3437,8 @@ export const demoTransactions = [
     amount: 22.18,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-04-15'),
     updatedAt: new Date('2027-04-15'),
     voucher: {
@@ -3151,6 +3459,8 @@ export const demoTransactions = [
     amount: 590.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-04-18'),
     updatedAt: new Date('2027-04-18'),
     voucher: {
@@ -3171,6 +3481,8 @@ export const demoTransactions = [
     amount: 540.0,
     type: 'DEPOSIT',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-04-22'),
     updatedAt: new Date('2027-04-22'),
     voucher: {
@@ -3191,6 +3503,8 @@ export const demoTransactions = [
     amount: 415.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-04-05'),
     updatedAt: new Date('2027-04-05'),
     voucher: {
@@ -3211,6 +3525,8 @@ export const demoTransactions = [
     amount: 5.0,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-04-20'),
     updatedAt: new Date('2027-04-20'),
     voucher: {
@@ -3231,6 +3547,8 @@ export const demoTransactions = [
     amount: 254.99,
     type: 'WITHDRAWAL',
     cleared: true,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-04-25'),
     updatedAt: new Date('2027-04-25'),
     voucher: {
@@ -3251,6 +3569,8 @@ export const demoTransactions = [
     amount: 1050.0,
     type: 'WITHDRAWAL',
     cleared: false,
+    notes: null,
+    receipts: [],
     createdAt: new Date('2027-04-28'),
     updatedAt: new Date('2027-04-28'),
     voucher: {

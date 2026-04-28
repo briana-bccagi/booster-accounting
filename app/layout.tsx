@@ -6,7 +6,7 @@ import Link from 'next/link'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Booster Club Accounting',
+  title: 'SPHS Band Booster',
   description: 'Financial management for booster club',
 }
 
@@ -23,7 +23,7 @@ export default function RootLayout({
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center">
                 <Link href="/" className="text-xl font-bold">
-                  Booster Club Accounting
+                  SPHS Band Booster
                 </Link>
               </div>
               <div className="flex space-x-4">
@@ -32,9 +32,6 @@ export default function RootLayout({
                 </Link>
                 <Link href="/ledger" className="hover:bg-slate-700 px-3 py-2 rounded-md text-sm font-medium">
                   Ledger
-                </Link>
-                <Link href="/vouchers" className="hover:bg-slate-700 px-3 py-2 rounded-md text-sm font-medium">
-                  Vouchers
                 </Link>
               </div>
             </div>

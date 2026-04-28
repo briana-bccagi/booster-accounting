@@ -8,17 +8,19 @@ datasource db {
 }
 
 model Transaction {
-  id            String   @id @default(uuid())
-  date          DateTime @default(now())
+  id            String      @id @default(uuid())
+  date          DateTime    @default(now())
   category      String
-  voucherNumber Int      @unique
+  voucherNumber Int         @unique
   vendor        String
   amount        Float
   type          String
-  cleared       Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  cleared       Boolean     @default(false)
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
   voucher       Voucher?
+  receipts      Receipt[]
 
   @@map("transactions")
 }
@@ -33,6 +35,16 @@ model Voucher {
   transaction     Transaction @relation(fields: [voucherNumber], references: [voucherNumber])
 
   @@map("vouchers")
+}
+
+model Receipt {
+  id            String      @id @default(uuid())
+  imageUrl      String
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+
+  @@map("receipts")
 }
 
 model Counter {

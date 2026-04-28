@@ -3,7 +3,7 @@ set -e
 
 export PATH="/Users/brianatalley/nodejs/bin:$PATH"
 
-echo "Building Booster Club Accounting App..."
+echo "Building SPHS Band Booster..."
 
 # Generate Prisma client
 npx prisma generate
