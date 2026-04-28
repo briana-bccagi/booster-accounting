@@ -1,4 +1,4 @@
-import { getAccountOverview, getMonthlyBreakdown, getTransactions } from './actions'
+import { getAccountOverview, getPivotTable, getTransactions } from './actions'
 import DashboardFilters from './dashboard-filters'
 
 export const dynamic = 'force-dynamic'
@@ -23,7 +23,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
   const overview = await getAccountOverview(filters)
 
-  const monthlyBreakdown = await getMonthlyBreakdown(filters)
+  const pivot = await getPivotTable(filters)
 
   const allTransactions = await getTransactions()
 
@@ -58,7 +58,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
       value: String(fy),
     }))
 
-  let headingText = 'Monthly Breakdown'
+  let headingText = 'Category Breakdown by Month'
   let periodLabel = 'All Time'
   if (yearParam !== undefined && monthParam !== undefined) {
     const date = new Date(yearParam, monthParam)
@@ -68,6 +68,8 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     headingText = `Fiscal Year ${fiscalYearParam}-${fiscalYearParam + 1} Breakdown (June - May)`
     periodLabel = `FY ${fiscalYearParam}-${fiscalYearParam + 1}`
   }
+
+  const hasData = pivot.monthLabels.length > 0
 
   return (
     <div className="space-y-8">
@@ -111,68 +113,100 @@ export default async function DashboardPage({ searchParams }: PageProps) {
           <DashboardFilters monthOptions={monthOptions} fiscalYearOptions={fiscalYearOptions} />
         </div>
 
-        {monthlyBreakdown.length === 0 ? (
+        {!hasData ? (
           <p className="text-slate-500">No transactions for the selected period.</p>
         ) : (
-          monthlyBreakdown.map((month) => (
-            <div key={month.monthLabel} className="bg-white rounded-lg shadow border border-slate-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-slate-900">{month.monthLabel}</h3>
-                <div className="flex gap-4 text-sm">
-                  <span className="text-green-600 font-medium">+${month.totalDeposits.toFixed(2)}</span>
-                  <span className="text-red-600 font-medium">-${month.totalWithdrawals.toFixed(2)}</span>
-                  <span className={`font-bold ${month.net >= 0 ? 'text-slate-900' : 'text-red-700'}`}>
-                    Net: ${month.net.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-slate-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Category</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Deposits</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Withdrawals</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Net</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200">
-                    {month.categories.map((cat) => (
-                      <tr key={cat.category} className="hover:bg-slate-50">
-                        <td className="px-6 py-3 text-sm text-slate-900">{cat.category}</td>
-                        <td className="px-6 py-3 text-sm text-right text-green-600 font-medium">
-                          {cat.deposits > 0 ? `+$${cat.deposits.toFixed(2)}` : '-'}
-                        </td>
-                        <td className="px-6 py-3 text-sm text-right text-red-600 font-medium">
-                          {cat.withdrawals > 0 ? `-$${cat.withdrawals.toFixed(2)}` : '-'}
-                        </td>
-                        <td className={`px-6 py-3 text-sm text-right font-bold ${cat.net >= 0 ? 'text-slate-900' : 'text-red-700'}`}>
-                          ${cat.net.toFixed(2)}
-                        </td>
-                      </tr>
+          <div className="bg-white rounded-lg shadow border border-slate-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[800px]">
+                <thead className="bg-slate-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider sticky left-0 bg-slate-50 border-r border-slate-200">
+                      Month
+                    </th>
+                    {pivot.categoryNames.map((cat) => (
+                      <th
+                        key={cat}
+                        className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider min-w-[120px]"
+                      >
+                        {cat}
+                      </th>
                     ))}
-                    <tr className="bg-slate-100 font-semibold">
-                      <td className="px-6 py-3 text-sm text-slate-900">Month Total</td>
-                      <td className="px-6 py-3 text-sm text-right text-green-700">
-                        +${month.totalDeposits.toFixed(2)}
+                    <th className="px-4 py-3 text-right text-xs font-bold text-slate-700 uppercase tracking-wider border-l border-slate-200 bg-slate-100 min-w-[120px]">
+                      Month Total
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {pivot.monthLabels.map((month) => (
+                    <tr key={month} className="hover:bg-slate-50">
+                      <td className="px-4 py-3 text-sm font-semibold text-slate-900 sticky left-0 bg-white border-r border-slate-200">
+                        {month}
                       </td>
-                      <td className="px-6 py-3 text-sm text-right text-red-700">
-                        -${month.totalWithdrawals.toFixed(2)}
-                      </td>
-                      <td className={`px-6 py-3 text-sm text-right ${month.net >= 0 ? 'text-slate-900' : 'text-red-800'}`}>
-                        ${month.net.toFixed(2)}
+                      {pivot.categoryNames.map((cat) => {
+                        const val = pivot.values[month]?.[cat] ?? 0
+                        return (
+                          <td
+                            key={`${month}-${cat}`}
+                            className={`px-4 py-3 text-sm text-right font-medium ${
+                              val > 0
+                                ? 'text-green-600'
+                                : val < 0
+                                  ? 'text-red-600'
+                                  : 'text-slate-400'
+                            }`}
+                          >
+                            {val !== 0 ? `$${val.toFixed(2)}` : '-'}
+                          </td>
+                        )
+                      })}
+                      <td
+                        className={`px-4 py-3 text-sm text-right font-bold border-l border-slate-200 bg-slate-50 ${
+                          pivot.monthTotals[month] >= 0 ? 'text-slate-900' : 'text-red-700'
+                        }`}
+                      >
+                        ${pivot.monthTotals[month].toFixed(2)}
                       </td>
                     </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 text-right">
-                {month.transactionCount} transaction{month.transactionCount !== 1 ? 's' : ''}
-              </div>
+                  ))}
+                  {/* Totals row */}
+                  <tr className="bg-slate-100 font-semibold border-t-2 border-slate-300">
+                    <td className="px-4 py-3 text-sm text-slate-900 sticky left-0 bg-slate-100 border-r border-slate-200">
+                      Category Total
+                    </td>
+                    {pivot.categoryNames.map((cat) => (
+                      <td
+                        key={`total-${cat}`}
+                        className={`px-4 py-3 text-sm text-right font-bold ${
+                          pivot.categoryTotals[cat] > 0
+                            ? 'text-green-700'
+                            : pivot.categoryTotals[cat] < 0
+                              ? 'text-red-700'
+                              : 'text-slate-500'
+                        }`}
+                      >
+                        {pivot.categoryTotals[cat] !== 0
+                          ? `$${pivot.categoryTotals[cat].toFixed(2)}`
+                          : '-'}
+                      </td>
+                    ))}
+                    <td
+                      className={`px-4 py-3 text-sm text-right font-bold border-l border-slate-200 ${
+                        pivot.grandTotal >= 0 ? 'text-slate-900' : 'text-red-800'
+                      }`}
+                    >
+                      ${pivot.grandTotal.toFixed(2)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-          ))
+
+            <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 text-right">
+              {pivot.monthLabels.length} month{pivot.monthLabels.length !== 1 ? 's' : ''} ·{' '}
+              {pivot.categoryNames.length} categories
+            </div>
+          </div>
         )}
       </div>
     </div>

@@ -472,3 +472,85 @@ export async function getMonthlyBreakdown(filters?: MonthlyBreakdownFilters): Pr
     return b.monthIndex - a.monthIndex
   })
 }
+
+export interface PivotTableData {
+  monthLabels: string[]
+  categoryNames: string[]
+  values: Record<string, Record<string, number>> // monthLabel -> category -> net
+  monthTotals: Record<string, number>
+  categoryTotals: Record<string, number>
+  grandTotal: number
+}
+
+export async function getPivotTable(filters?: MonthlyBreakdownFilters): Promise<PivotTableData> {
+  const transactions = await getTransactions()
+
+  let filteredTransactions = transactions
+
+  if (filters?.year !== undefined && filters?.month !== undefined) {
+    filteredTransactions = transactions.filter((t) => {
+      const date = new Date(t.date)
+      return date.getFullYear() === filters.year && date.getMonth() === filters.month
+    })
+  } else if (filters?.fiscalYear !== undefined) {
+    const startDate = new Date(filters.fiscalYear, 5, 1)
+    const endDate = new Date(filters.fiscalYear + 1, 4, 31, 23, 59, 59)
+    filteredTransactions = transactions.filter((t) => {
+      const date = new Date(t.date)
+      return date >= startDate && date <= endDate
+    })
+  }
+
+  const monthMap = new Map<string, { label: string; year: number; monthIndex: number }>()
+  const categorySet = new Set<string>()
+  const values: Record<string, Record<string, number>> = {}
+  const monthTotals: Record<string, number> = {}
+  const categoryTotals: Record<string, number> = {}
+
+  for (const t of filteredTransactions) {
+    const date = new Date(t.date)
+    const year = date.getFullYear()
+    const monthIndex = date.getMonth()
+    const monthLabel = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    const monthKey = `${year}-${monthIndex}`
+
+    if (!monthMap.has(monthKey)) {
+      monthMap.set(monthKey, { label: monthLabel, year, monthIndex })
+      values[monthLabel] = {}
+      monthTotals[monthLabel] = 0
+    }
+
+    const cat = t.category as string
+    categorySet.add(cat)
+
+    if (!categoryTotals[cat]) categoryTotals[cat] = 0
+
+    const amount = Number(t.amount)
+    const signedAmount = t.type === 'DEPOSIT' ? amount : -amount
+
+    if (!values[monthLabel][cat]) values[monthLabel][cat] = 0
+    values[monthLabel][cat] += signedAmount
+    monthTotals[monthLabel] += signedAmount
+    categoryTotals[cat] += signedAmount
+  }
+
+  // Sort months chronologically
+  const sortedMonths = Array.from(monthMap.values()).sort((a, b) => {
+    if (a.year !== b.year) return a.year - b.year
+    return a.monthIndex - b.monthIndex
+  })
+
+  // Sort categories alphabetically for consistent columns
+  const sortedCategories = Array.from(categorySet).sort()
+
+  const grandTotal = Object.values(monthTotals).reduce((sum, v) => sum + v, 0)
+
+  return {
+    monthLabels: sortedMonths.map((m) => m.label),
+    categoryNames: sortedCategories,
+    values,
+    monthTotals,
+    categoryTotals,
+    grandTotal,
+  }
+}
