@@ -9,7 +9,6 @@ interface PageProps {
 
 export default async function DashboardPage({ searchParams }: PageProps) {
   const params = await searchParams
-  const overview = await getAccountOverview()
 
   const yearParam = params.year ? parseInt(params.year, 10) : undefined
   const monthParam = params.month ? parseInt(params.month, 10) : undefined
@@ -21,6 +20,8 @@ export default async function DashboardPage({ searchParams }: PageProps) {
       : fiscalYearParam !== undefined
         ? { fiscalYear: fiscalYearParam }
         : undefined
+
+  const overview = await getAccountOverview(filters)
 
   const monthlyBreakdown = await getMonthlyBreakdown(filters)
 
@@ -58,11 +59,14 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     }))
 
   let headingText = 'Monthly Breakdown'
+  let periodLabel = 'All Time'
   if (yearParam !== undefined && monthParam !== undefined) {
     const date = new Date(yearParam, monthParam)
     headingText = `${date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} Breakdown`
+    periodLabel = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
   } else if (fiscalYearParam !== undefined) {
     headingText = `Fiscal Year ${fiscalYearParam}-${fiscalYearParam + 1} Breakdown (June - May)`
+    periodLabel = `FY ${fiscalYearParam}-${fiscalYearParam + 1}`
   }
 
   return (
@@ -71,18 +75,33 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
-          <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wide">Current Balance</h2>
+          <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wide">
+            {filters ? `${periodLabel} Balance` : 'Current Balance'}
+          </h2>
           <p className="text-3xl font-bold text-slate-900 mt-2">${overview.balance.toFixed(2)}</p>
+          {filters && (
+            <p className="text-xs text-slate-400 mt-1">for selected period</p>
+          )}
         </div>
 
         <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
-          <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wide">Cleared Balance</h2>
+          <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wide">
+            {filters ? `${periodLabel} Cleared` : 'Cleared Balance'}
+          </h2>
           <p className="text-3xl font-bold text-green-600 mt-2">${overview.clearedBalance.toFixed(2)}</p>
+          {filters && (
+            <p className="text-xs text-slate-400 mt-1">for selected period</p>
+          )}
         </div>
 
         <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
-          <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wide">Pending</h2>
+          <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wide">
+            {filters ? `${periodLabel} Pending` : 'Pending'}
+          </h2>
           <p className="text-3xl font-bold text-amber-600 mt-2">${overview.pendingBalance.toFixed(2)}</p>
+          {filters && (
+            <p className="text-xs text-slate-400 mt-1">for selected period</p>
+          )}
         </div>
       </div>
 

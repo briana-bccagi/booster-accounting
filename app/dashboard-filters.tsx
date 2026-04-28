@@ -40,6 +40,12 @@ export default function DashboardFilters({ monthOptions, fiscalYearOptions }: Da
     router.push(`/?fiscalYear=${value}`)
   }
 
+  const activeFilter = selectedMonth
+    ? 'month'
+    : selectedFiscalYear
+      ? 'fiscalYear'
+      : null
+
   return (
     <div className="flex flex-wrap gap-4 items-end">
       <div>
@@ -50,7 +56,13 @@ export default function DashboardFilters({ monthOptions, fiscalYearOptions }: Da
           id="month-filter"
           value={selectedMonth}
           onChange={(e) => handleMonthChange(e.target.value)}
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white min-w-[180px]"
+          className={`rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white min-w-[180px] ${
+            activeFilter === 'month'
+              ? 'border-blue-500 ring-1 ring-blue-500'
+              : activeFilter === 'fiscalYear'
+                ? 'border-slate-200 opacity-60'
+                : 'border-slate-300'
+          }`}
         >
           <option value="">All Months</option>
           {monthOptions.map((opt) => (
@@ -69,7 +81,13 @@ export default function DashboardFilters({ monthOptions, fiscalYearOptions }: Da
           id="fy-filter"
           value={selectedFiscalYear}
           onChange={(e) => handleFiscalYearChange(e.target.value)}
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white min-w-[180px]"
+          className={`rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white min-w-[180px] ${
+            activeFilter === 'fiscalYear'
+              ? 'border-blue-500 ring-1 ring-blue-500'
+              : activeFilter === 'month'
+                ? 'border-slate-200 opacity-60'
+                : 'border-slate-300'
+          }`}
         >
           <option value="">All Fiscal Years</option>
           {fiscalYearOptions.map((opt) => (

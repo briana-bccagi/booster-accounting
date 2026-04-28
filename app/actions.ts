@@ -261,55 +261,118 @@ export async function getVouchers() {
   }
 }
 
-export async function getAccountOverview() {
-  if (useDemoMode) return getDemoOverview()
+function calculateOverview(transactions: Array<any>) {
+  const totalDeposits = transactions
+    .filter((t: { type: string; amount: number }) => t.type === 'DEPOSIT')
+    .reduce((sum: number, t: { amount: number }) => sum + t.amount, 0)
+
+  const totalWithdrawals = transactions
+    .filter((t: { type: string; amount: number }) => t.type === 'WITHDRAWAL')
+    .reduce((sum: number, t: { amount: number }) => sum + t.amount, 0)
+
+  const balance = totalDeposits - totalWithdrawals
+
+  const clearedDeposits = transactions
+    .filter((t: { type: string; cleared: boolean; amount: number }) => t.type === 'DEPOSIT' && t.cleared)
+    .reduce((sum: number, t: { amount: number }) => sum + t.amount, 0)
+
+  const clearedWithdrawals = transactions
+    .filter((t: { type: string; cleared: boolean; amount: number }) => t.type === 'WITHDRAWAL' && t.cleared)
+    .reduce((sum: number, t: { amount: number }) => sum + t.amount, 0)
+
+  const clearedBalance = clearedDeposits - clearedWithdrawals
+
+  const pendingDeposits = totalDeposits - clearedDeposits
+  const pendingWithdrawals = totalWithdrawals - clearedWithdrawals
+
+  return {
+    balance,
+    clearedBalance,
+    pendingBalance: balance - clearedBalance,
+    totalDeposits,
+    totalWithdrawals,
+    clearedDeposits,
+    clearedWithdrawals,
+    pendingDeposits,
+    pendingWithdrawals,
+    transactionCount: transactions.length,
+  }
+}
+
+export async function getAccountOverview(filters?: MonthlyBreakdownFilters) {
+  if (useDemoMode) {
+    let transactions = demoTransactions
+    if (filters?.year !== undefined && filters?.month !== undefined) {
+      transactions = transactions.filter((t) => {
+        const date = new Date(t.date)
+        return date.getFullYear() === filters.year && date.getMonth() === filters.month
+      })
+    } else if (filters?.fiscalYear !== undefined) {
+      const startDate = new Date(filters.fiscalYear, 5, 1)
+      const endDate = new Date(filters.fiscalYear + 1, 4, 31, 23, 59, 59)
+      transactions = transactions.filter((t) => {
+        const date = new Date(t.date)
+        return date >= startDate && date <= endDate
+      })
+    }
+    return calculateOverview(transactions)
+  }
+
   try {
-    const transactions = await prisma.transaction.findMany()
+    let transactions = await prisma.transaction.findMany()
 
     if (transactions.length === 0) {
-      return getDemoOverview()
+      let demoTx = demoTransactions
+      if (filters?.year !== undefined && filters?.month !== undefined) {
+        demoTx = demoTx.filter((t) => {
+          const date = new Date(t.date)
+          return date.getFullYear() === filters.year && date.getMonth() === filters.month
+        })
+      } else if (filters?.fiscalYear !== undefined) {
+        const startDate = new Date(filters.fiscalYear, 5, 1)
+        const endDate = new Date(filters.fiscalYear + 1, 4, 31, 23, 59, 59)
+        demoTx = demoTx.filter((t) => {
+          const date = new Date(t.date)
+          return date >= startDate && date <= endDate
+        })
+      }
+      return calculateOverview(demoTx)
     }
 
-    const totalDeposits = transactions
-      .filter((t: { type: string; amount: number }) => t.type === 'DEPOSIT')
-      .reduce((sum: number, t: { amount: number }) => sum + t.amount, 0)
-
-    const totalWithdrawals = transactions
-      .filter((t: { type: string; amount: number }) => t.type === 'WITHDRAWAL')
-      .reduce((sum: number, t: { amount: number }) => sum + t.amount, 0)
-
-    const balance = totalDeposits - totalWithdrawals
-
-    const clearedDeposits = transactions
-      .filter((t: { type: string; cleared: boolean; amount: number }) => t.type === 'DEPOSIT' && t.cleared)
-      .reduce((sum: number, t: { amount: number }) => sum + t.amount, 0)
-
-    const clearedWithdrawals = transactions
-      .filter((t: { type: string; cleared: boolean; amount: number }) => t.type === 'WITHDRAWAL' && t.cleared)
-      .reduce((sum: number, t: { amount: number }) => sum + t.amount, 0)
-
-    const clearedBalance = clearedDeposits - clearedWithdrawals
-
-    const pendingDeposits = totalDeposits - clearedDeposits
-    const pendingWithdrawals = totalWithdrawals - clearedWithdrawals
+    if (filters?.year !== undefined && filters?.month !== undefined) {
+      transactions = transactions.filter((t: { date: Date }) => {
+        const date = new Date(t.date)
+        return date.getFullYear() === filters.year && date.getMonth() === filters.month
+      })
+    } else if (filters?.fiscalYear !== undefined) {
+      const startDate = new Date(filters.fiscalYear, 5, 1)
+      const endDate = new Date(filters.fiscalYear + 1, 4, 31, 23, 59, 59)
+      transactions = transactions.filter((t: { date: Date }) => {
+        const date = new Date(t.date)
+        return date >= startDate && date <= endDate
+      })
+    }
 
     clearDbError()
-    return {
-      balance,
-      clearedBalance,
-      pendingBalance: balance - clearedBalance,
-      totalDeposits,
-      totalWithdrawals,
-      clearedDeposits,
-      clearedWithdrawals,
-      pendingDeposits,
-      pendingWithdrawals,
-      transactionCount: transactions.length,
-    }
+    return calculateOverview(transactions)
   } catch (error) {
     handleDbError(error)
     setDbError('Database not connected - showing demo data')
-    return getDemoOverview()
+    let demoTx = demoTransactions
+    if (filters?.year !== undefined && filters?.month !== undefined) {
+      demoTx = demoTx.filter((t) => {
+        const date = new Date(t.date)
+        return date.getFullYear() === filters.year && date.getMonth() === filters.month
+      })
+    } else if (filters?.fiscalYear !== undefined) {
+      const startDate = new Date(filters.fiscalYear, 5, 1)
+      const endDate = new Date(filters.fiscalYear + 1, 4, 31, 23, 59, 59)
+      demoTx = demoTx.filter((t) => {
+        const date = new Date(t.date)
+        return date >= startDate && date <= endDate
+      })
+    }
+    return calculateOverview(demoTx)
   }
 }
 
