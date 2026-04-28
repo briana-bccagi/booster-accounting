@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, Fragment } from 'react'
 import { useRouter } from 'next/navigation'
+import { formatCurrency } from '../../lib/utils'
 import {
   createTransaction,
   updateTransaction,
@@ -54,10 +55,19 @@ export default function LedgerPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [editFormData, setEditFormData] = useState<TransactionInput>({
+    date: new Date().toISOString().split('T')[0],
+    category: categories[0],
+    vendor: '',
+    amount: '',
+    type: 'DEPOSIT',
+    cleared: false,
+  })
   const [uploadingIds, setUploadingIds] = useState<Set<string>>(new Set())
   const [editingNotesId, setEditingNotesId] = useState<string | null>(null)
   const [noteText, setNoteText] = useState('')
   const [receipts, setReceipts] = useState<Record<string, Receipt[]>>({})
+  const formRef = useRef<HTMLFormElement>(null)
 
   const router = useRouter()
 
@@ -80,12 +90,12 @@ export default function LedgerPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (editingId) {
-      await updateTransaction({ ...formData, id: editingId })
+      // This case is now handled by handleSaveEdit for inline editing
+      return
     } else {
       await createTransaction(formData)
     }
     setShowForm(false)
-    setEditingId(null)
     setFormData({
       date: new Date().toISOString().split('T')[0],
       category: categories[0],
@@ -99,10 +109,9 @@ export default function LedgerPage() {
   }
 
   const handleEdit = (t: Transaction) => {
-    setEditingId(t.id)
     const dateValue = t.date as unknown as string | Date
     const dateStr = typeof dateValue === 'string' ? dateValue : dateValue.toISOString()
-    setFormData({
+    setEditFormData({
       date: dateStr.split('T')[0],
       category: t.category as TransactionInput['category'],
       vendor: t.vendor,
@@ -110,7 +119,18 @@ export default function LedgerPage() {
       type: t.type as 'DEPOSIT' | 'WITHDRAWAL',
       cleared: t.cleared,
     })
-    setShowForm(true)
+    setEditingId(t.id)
+  }
+
+  const handleCancelEdit = () => {
+    setEditingId(null)
+  }
+
+  const handleSaveEdit = async (t: Transaction) => {
+    await updateTransaction({ ...editFormData, id: t.id })
+    setEditingId(null)
+    await loadTransactions()
+    router.refresh()
   }
 
   const handleDelete = async (id: string) => {
@@ -217,7 +237,7 @@ export default function LedgerPage() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 border border-slate-200 space-y-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 border border-slate-200 space-y-4">
           <h2 className="text-lg font-semibold text-slate-900">
             {editingId ? 'Edit Transaction' : 'New Transaction'}
           </h2>
@@ -278,16 +298,16 @@ export default function LedgerPage() {
                 <option value="WITHDRAWAL">Withdrawal</option>
               </select>
             </div>
-            <div className="flex items-center">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.cleared}
-                  onChange={(e) => setFormData({ ...formData, cleared: e.target.checked })}
-                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm font-medium text-slate-700">Cleared</span>
-              </label>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Cleared</label>
+              <select
+                value={formData.cleared ? 'Yes' : 'No'}
+                onChange={(e) => setFormData({ ...formData, cleared: e.target.value === 'Yes' })}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
             </div>
           </div>
           <div className="flex justify-end space-x-3">
@@ -339,77 +359,162 @@ export default function LedgerPage() {
                   const isEditingNotes = editingNotesId === t.id
 
                   return (
-                    <>
-                      <tr key={t.id} className="hover:bg-slate-50">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-slate-900">
-                          #{t.voucherNumber}
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <button
-                            onClick={() => handleExpand(t.id)}
-                            className="text-slate-400 hover:text-slate-600 transition-colors"
-                          >
-                            {isExpanded ? (
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                              </svg>
-                            ) : (
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                              </svg>
-                            )}
-                          </button>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-900">
-                          {new Date(t.date).toLocaleDateString()}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-600">
-                          {t.category}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-900">
-                          {t.vendor}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                            t.type === 'DEPOSIT'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {t.type}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-right font-medium">
-                          <span className={t.type === 'DEPOSIT' ? 'text-green-600' : 'text-red-600'}>
-                            {t.type === 'DEPOSIT' ? '+' : '-'}${Number(t.amount).toFixed(2)}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-center">
-                          <button
-                            onClick={() => handleToggleCleared(t.id, t.cleared)}
-                            className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full cursor-pointer ${
-                              t.cleared
+                    <Fragment key={`${t.id}-wrapper`}>
+                      {editingId === t.id ? (
+                        // Inline Edit Row
+                        <tr key={t.id} className="bg-blue-50">
+                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-slate-900">
+                            #{t.voucherNumber}
+                          </td>
+                          <td className="px-4 py-3"></td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <input
+                              type="date"
+                              value={editFormData.date}
+                              onChange={(e) => setEditFormData({ ...editFormData, date: e.target.value })}
+                              className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              required
+                            />
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <select
+                              value={editFormData.category}
+                              onChange={(e) => setEditFormData({ ...editFormData, category: e.target.value as TransactionInput['category'] })}
+                              className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              {categories.map((c) => (
+                                <option key={c} value={c}>{c}</option>
+                              ))}
+                            </select>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <input
+                              type="text"
+                              value={editFormData.vendor}
+                              onChange={(e) => setEditFormData({ ...editFormData, vendor: e.target.value })}
+                              className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              required
+                            />
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <select
+                              value={editFormData.type}
+                              onChange={(e) => setEditFormData({ ...editFormData, type: e.target.value as 'DEPOSIT' | 'WITHDRAWAL' })}
+                              className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              <option value="DEPOSIT">Deposit</option>
+                              <option value="WITHDRAWAL">Withdrawal</option>
+                            </select>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-right">
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={editFormData.amount}
+                              onChange={(e) => setEditFormData({ ...editFormData, amount: e.target.value })}
+                              className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              placeholder="0.00"
+                              required
+                            />
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-center">
+                            <select
+                              value={editFormData.cleared ? 'Yes' : 'No'}
+                              onChange={(e) => setEditFormData({ ...editFormData, cleared: e.target.value === 'Yes' })}
+                              className="w-full rounded-md border border-slate-300 px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              <option value="Yes">Yes</option>
+                              <option value="No">No</option>
+                            </select>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-right text-sm space-x-2">
+                            <button
+                              onClick={() => handleSaveEdit(t)}
+                              className="text-green-600 hover:text-green-800 font-medium"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => handleCancelEdit()}
+                              className="text-slate-600 hover:text-slate-800 font-medium"
+                            >
+                              Cancel
+                            </button>
+                          </td>
+                        </tr>
+                      ) : (
+                        // Normal Display Row
+                        <tr key={t.id} className="hover:bg-slate-50">
+                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-slate-900">
+                            #{t.voucherNumber}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <button
+                              onClick={() => handleExpand(t.id)}
+                              className="text-slate-400 hover:text-slate-600 transition-colors"
+                            >
+                              {isExpanded ? (
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                              ) : (
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                              )}
+                            </button>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-900">
+                            {new Date(t.date).toLocaleDateString()}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-600">
+                            {t.category}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-900">
+                            {t.vendor}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm">
+                            <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                              t.type === 'DEPOSIT'
                                 ? 'bg-green-100 text-green-800'
-                                : 'bg-amber-100 text-amber-800'
-                            }`}
-                          >
-                            {t.cleared ? 'Yes' : 'No'}
-                          </button>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-right text-sm space-x-2">
-                          <button
-                            onClick={() => handleEdit(t)}
-                            className="text-blue-600 hover:text-blue-800 font-medium"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(t.id)}
-                            className="text-red-600 hover:text-red-800 font-medium"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {t.type}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-right font-medium">
+                            <span className={t.type === 'DEPOSIT' ? 'text-green-600' : 'text-red-600'}>
+                              {t.type === 'DEPOSIT' ? formatCurrency(Number(t.amount)) : formatCurrency(-Number(t.amount))}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-center">
+                            <button
+                              onClick={() => handleToggleCleared(t.id, t.cleared)}
+                              className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full cursor-pointer ${
+                                t.cleared
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-amber-100 text-amber-800'
+                              }`}
+                            >
+                              {t.cleared ? 'Yes' : 'No'}
+                            </button>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-right text-sm space-x-2">
+                            <button
+                              onClick={() => handleEdit(t)}
+                              className="text-blue-600 hover:text-blue-800 font-medium"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(t.id)}
+                              className="text-red-600 hover:text-red-800 font-medium"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      )}
 
                       {/* Expanded Details Row */}
                       {isExpanded && (
@@ -538,7 +643,7 @@ export default function LedgerPage() {
                           </td>
                         </tr>
                       )}
-                    </>
+                    </Fragment>
                   )
                 })
               )}
