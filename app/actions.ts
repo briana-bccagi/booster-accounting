@@ -476,10 +476,14 @@ export async function getMonthlyBreakdown(filters?: MonthlyBreakdownFilters): Pr
 export interface PivotTableData {
   monthLabels: string[]
   categoryNames: string[]
+  depositCategories: string[]
+  withdrawalCategories: string[]
   values: Record<string, Record<string, number>> // monthLabel -> category -> net
   monthTotals: Record<string, number>
   categoryTotals: Record<string, number>
   grandTotal: number
+  depositTotal: number
+  withdrawalTotal: number
 }
 
 export async function getPivotTable(filters?: MonthlyBreakdownFilters): Promise<PivotTableData> {
@@ -502,7 +506,8 @@ export async function getPivotTable(filters?: MonthlyBreakdownFilters): Promise<
   }
 
   const monthMap = new Map<string, { label: string; year: number; monthIndex: number }>()
-  const categorySet = new Set<string>()
+  const depositCategorySet = new Set<string>()
+  const withdrawalCategorySet = new Set<string>()
   const values: Record<string, Record<string, number>> = {}
   const monthTotals: Record<string, number> = {}
   const categoryTotals: Record<string, number> = {}
@@ -521,7 +526,13 @@ export async function getPivotTable(filters?: MonthlyBreakdownFilters): Promise<
     }
 
     const cat = t.category as string
-    categorySet.add(cat)
+    
+    // Track separate category sets for deposits and withdrawals
+    if (t.type === 'DEPOSIT') {
+      depositCategorySet.add(cat)
+    } else {
+      withdrawalCategorySet.add(cat)
+    }
 
     if (!categoryTotals[cat]) categoryTotals[cat] = 0
 
@@ -540,17 +551,35 @@ export async function getPivotTable(filters?: MonthlyBreakdownFilters): Promise<
     return a.monthIndex - b.monthIndex
   })
 
-  // Sort categories alphabetically for consistent columns
-  const sortedCategories = Array.from(categorySet).sort()
+  // Sort deposit categories alphabetically
+  const sortedDepositCategories = Array.from(depositCategorySet).sort()
+  
+  // Sort withdrawal categories alphabetically
+  const sortedWithdrawalCategories = Array.from(withdrawalCategorySet).sort()
 
+  // Calculate grand total
   const grandTotal = Object.values(monthTotals).reduce((sum, v) => sum + v, 0)
+  
+  // Calculate deposit and withdrawal totals
+  let depositTotal = 0
+  let withdrawalTotal = 0
+  for (const cat of depositCategorySet) {
+    depositTotal += categoryTotals[cat] || 0
+  }
+  for (const cat of withdrawalCategorySet) {
+    withdrawalTotal += Math.abs(categoryTotals[cat] || 0)
+  }
 
   return {
     monthLabels: sortedMonths.map((m) => m.label),
-    categoryNames: sortedCategories,
+    categoryNames: [...sortedDepositCategories, ...sortedWithdrawalCategories],
+    depositCategories: sortedDepositCategories,
+    withdrawalCategories: sortedWithdrawalCategories,
     values,
     monthTotals,
     categoryTotals,
     grandTotal,
+    depositTotal,
+    withdrawalTotal,
   }
 }

@@ -116,97 +116,157 @@ export default async function DashboardPage({ searchParams }: PageProps) {
         {!hasData ? (
           <p className="text-slate-500">No transactions for the selected period.</p>
         ) : (
-          <div className="bg-white rounded-lg shadow border border-slate-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[800px]">
-                <thead className="bg-slate-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider sticky left-0 bg-slate-50 border-r border-slate-200">
-                      Month
-                    </th>
-                    {pivot.categoryNames.map((cat) => (
-                      <th
-                        key={cat}
-                        className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider min-w-[120px]"
-                      >
-                        {cat}
+          <>
+            {/* Deposits Table */}
+            <div className="bg-white rounded-lg shadow border border-slate-200 overflow-hidden">
+              <div className="px-4 py-3 bg-green-50 border-b border-slate-200">
+                <h3 className="text-lg font-semibold text-green-800">Deposits</h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[600px]">
+                  <thead className="bg-slate-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider sticky left-0 bg-slate-50 border-r border-slate-200">
+                        Month
                       </th>
+                      {pivot.depositCategories.map((cat) => (
+                        <th
+                          key={cat}
+                          className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider min-w-[120px]"
+                        >
+                          {cat}
+                        </th>
+                      ))}
+                      <th className="px-4 py-3 text-right text-xs font-bold text-slate-700 uppercase tracking-wider border-l border-slate-200 bg-slate-100 min-w-[120px]">
+                        Month Total
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {pivot.monthLabels.map((month) => (
+                      <tr key={month} className="hover:bg-slate-50">
+                        <td className="px-4 py-3 text-sm font-semibold text-slate-900 sticky left-0 bg-white border-r border-slate-200">
+                          {month}
+                        </td>
+                        {pivot.depositCategories.map((cat) => {
+                          const val = pivot.values[month]?.[cat] ?? 0
+                          return (
+                            <td
+                              key={`${month}-${cat}`}
+                              className="px-4 py-3 text-sm text-right font-medium text-green-600"
+                            >
+                              {val !== 0 ? `$${val.toFixed(2)}` : '-'}
+                            </td>
+                          )
+                        })}
+                        <td className="px-4 py-3 text-sm text-right font-bold border-l border-slate-200 bg-slate-50 text-slate-900">
+                          ${pivot.monthTotals[month] >= 0 ? pivot.monthTotals[month].toFixed(2) : '0.00'}
+                        </td>
+                      </tr>
                     ))}
-                    <th className="px-4 py-3 text-right text-xs font-bold text-slate-700 uppercase tracking-wider border-l border-slate-200 bg-slate-100 min-w-[120px]">
-                      Month Total
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {pivot.monthLabels.map((month) => (
-                    <tr key={month} className="hover:bg-slate-50">
-                      <td className="px-4 py-3 text-sm font-semibold text-slate-900 sticky left-0 bg-white border-r border-slate-200">
-                        {month}
+                    {/* Totals row */}
+                    <tr className="bg-slate-100 font-semibold border-t-2 border-slate-300">
+                      <td className="px-4 py-3 text-sm text-slate-900 sticky left-0 bg-slate-100 border-r border-slate-200">
+                        Category Total
                       </td>
-                      {pivot.categoryNames.map((cat) => {
-                        const val = pivot.values[month]?.[cat] ?? 0
-                        return (
-                          <td
-                            key={`${month}-${cat}`}
-                            className={`px-4 py-3 text-sm text-right font-medium ${
-                              val > 0
-                                ? 'text-green-600'
-                                : val < 0
-                                  ? 'text-red-600'
-                                  : 'text-slate-400'
-                            }`}
-                          >
-                            {val !== 0 ? `$${val.toFixed(2)}` : '-'}
-                          </td>
-                        )
-                      })}
-                      <td
-                        className={`px-4 py-3 text-sm text-right font-bold border-l border-slate-200 bg-slate-50 ${
-                          pivot.monthTotals[month] >= 0 ? 'text-slate-900' : 'text-red-700'
-                        }`}
-                      >
-                        ${pivot.monthTotals[month].toFixed(2)}
+                      {pivot.depositCategories.map((cat) => (
+                        <td
+                          key={`total-${cat}`}
+                          className="px-4 py-3 text-sm text-right font-bold text-green-700"
+                        >
+                          {pivot.categoryTotals[cat] !== 0
+                            ? `$${pivot.categoryTotals[cat].toFixed(2)}`
+                            : '-'}
+                        </td>
+                      ))}
+                      <td className="px-4 py-3 text-sm text-right font-bold border-l border-slate-200 text-slate-900">
+                        ${pivot.depositTotal.toFixed(2)}
                       </td>
                     </tr>
-                  ))}
-                  {/* Totals row */}
-                  <tr className="bg-slate-100 font-semibold border-t-2 border-slate-300">
-                    <td className="px-4 py-3 text-sm text-slate-900 sticky left-0 bg-slate-100 border-r border-slate-200">
-                      Category Total
-                    </td>
-                    {pivot.categoryNames.map((cat) => (
-                      <td
-                        key={`total-${cat}`}
-                        className={`px-4 py-3 text-sm text-right font-bold ${
-                          pivot.categoryTotals[cat] > 0
-                            ? 'text-green-700'
-                            : pivot.categoryTotals[cat] < 0
-                              ? 'text-red-700'
-                              : 'text-slate-500'
-                        }`}
-                      >
-                        {pivot.categoryTotals[cat] !== 0
-                          ? `$${pivot.categoryTotals[cat].toFixed(2)}`
-                          : '-'}
-                      </td>
-                    ))}
-                    <td
-                      className={`px-4 py-3 text-sm text-right font-bold border-l border-slate-200 ${
-                        pivot.grandTotal >= 0 ? 'text-slate-900' : 'text-red-800'
-                      }`}
-                    >
-                      ${pivot.grandTotal.toFixed(2)}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
+              <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 text-right">
+                {pivot.monthLabels.length} month{pivot.monthLabels.length !== 1 ? 's' : ''} ·{' '}
+                {pivot.depositCategories.length} deposit categories
+              </div>
             </div>
 
-            <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 text-right">
-              {pivot.monthLabels.length} month{pivot.monthLabels.length !== 1 ? 's' : ''} ·{' '}
-              {pivot.categoryNames.length} categories
+            {/* Withdrawals Table */}
+            <div className="bg-white rounded-lg shadow border border-slate-200 overflow-hidden mt-8">
+              <div className="px-4 py-3 bg-red-50 border-b border-slate-200">
+                <h3 className="text-lg font-semibold text-red-800">Withdrawals</h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[600px]">
+                  <thead className="bg-slate-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider sticky left-0 bg-slate-50 border-r border-slate-200">
+                        Month
+                      </th>
+                      {pivot.withdrawalCategories.map((cat) => (
+                        <th
+                          key={cat}
+                          className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider min-w-[120px]"
+                        >
+                          {cat}
+                        </th>
+                      ))}
+                      <th className="px-4 py-3 text-right text-xs font-bold text-slate-700 uppercase tracking-wider border-l border-slate-200 bg-slate-100 min-w-[120px]">
+                        Month Total
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {pivot.monthLabels.map((month) => (
+                      <tr key={month} className="hover:bg-slate-50">
+                        <td className="px-4 py-3 text-sm font-semibold text-slate-900 sticky left-0 bg-white border-r border-slate-200">
+                          {month}
+                        </td>
+                        {pivot.withdrawalCategories.map((cat) => {
+                          const val = pivot.values[month]?.[cat] ?? 0
+                          return (
+                            <td
+                              key={`${month}-${cat}`}
+                              className="px-4 py-3 text-sm text-right font-medium text-red-600"
+                            >
+                              {val !== 0 ? `$${val.toFixed(2)}` : '-'}
+                            </td>
+                          )
+                        })}
+                        <td className="px-4 py-3 text-sm text-right font-bold border-l border-slate-200 bg-slate-50 text-red-700">
+                          ${Math.abs(pivot.monthTotals[month] < 0 ? pivot.monthTotals[month] : 0).toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                    {/* Totals row */}
+                    <tr className="bg-slate-100 font-semibold border-t-2 border-slate-300">
+                      <td className="px-4 py-3 text-sm text-slate-900 sticky left-0 bg-slate-100 border-r border-slate-200">
+                        Category Total
+                      </td>
+                      {pivot.withdrawalCategories.map((cat) => (
+                        <td
+                          key={`total-${cat}`}
+                          className="px-4 py-3 text-sm text-right font-bold text-red-700"
+                        >
+                          {pivot.categoryTotals[cat] !== 0
+                            ? `$${Math.abs(pivot.categoryTotals[cat]).toFixed(2)}`
+                            : '-'}
+                        </td>
+                      ))}
+                      <td className="px-4 py-3 text-sm text-right font-bold border-l border-slate-200 text-red-800">
+                        ${Math.abs(pivot.withdrawalTotal).toFixed(2)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 text-right">
+                {pivot.monthLabels.length} month{pivot.monthLabels.length !== 1 ? 's' : ''} ·{' '}
+                {pivot.withdrawalCategories.length} withdrawal categories
+              </div>
             </div>
-          </div>
+          </>
         )}
       </div>
     </div>
